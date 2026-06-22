@@ -1,0 +1,17 @@
+[
+  {
+    "id": "rep-001",
+    "eventId": "evt-001",
+    "title": "Repertorio Ensayo Julio — Semana 1",
+    "items": [
+      {
+        "order": 1,
+        "songId": "song-001"
+      },
+      {
+        "order": 2,
+        "songId": "song-002"
+      }
+    ]
+  }
+]
