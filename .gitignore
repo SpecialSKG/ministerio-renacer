@@ -33,3 +33,8 @@ dist/
 *.zip
 *.rar
 *.7z
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
