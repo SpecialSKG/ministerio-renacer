@@ -36,7 +36,7 @@ Estas reglas aplican cuando un agente trabaje en la POC del proyecto.
 - Actualizar docs solo si aporta contexto real.
 - No duplicar documentos.
 - No crear archivos largos si una nota corta basta.
-- Mantener `docs/README.md` como índice principal.
+- Mantener `docs/README.md` como índice de los documentos técnicos. `AGENTS.md` es la instrucción principal del proyecto.
 
 ## Seguridad
 
