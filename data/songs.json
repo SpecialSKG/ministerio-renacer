@@ -1,0 +1,22 @@
+[
+  {
+    "id": "song-001",
+    "title": "Canto de Alabanza",
+    "lyrics": "Canta mi alma al Señor,\ncon alegría y fervor.\nSu amor eterno es mi canción,\nmi vida entera en adoración.",
+    "category": "alabanza",
+    "key": "C",
+    "chords": "C - G - Am - F",
+    "tags": ["alabanza", "apertura", "alegre"],
+    "notes": "Tempo rápido, adecuado para entrada."
+  },
+  {
+    "id": "song-002",
+    "title": "Canto de Comunión",
+    "lyrics": "Señor, recíbeme en tu mesa,\nparte el pan, dame tu fortaleza.\nEn tu cuerpo y sangre encuentro paz,\njamás me apartaré de ti, jamás.",
+    "category": "comunion",
+    "key": "G",
+    "chords": "G - Em - C - D",
+    "tags": ["comunion", "lento", "reflexivo"],
+    "notes": "Tempo lento, después de la consagración."
+  }
+]
