@@ -5,15 +5,6 @@
       "type": "local",
       "command": ["npx", "@playwright/mcp@latest"],
       "enabled": true
-    },
-    "github": {
-      "type": "remote",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "enabled": true,
-      "oauth": false,
-      "headers": {
-        "Authorization": ""
-      }
     }
   },
   "permission": {
@@ -21,5 +12,5 @@
       "*": "allow"
     }
   },
-  "instructions": ".opencode/instructions/AGENTS.md"
+  "instructions": [".opencode/instructions/AGENTS.md"]
 }
