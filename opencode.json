@@ -20,5 +20,6 @@
     "skill": {
       "*": "allow"
     }
-  }
+  },
+  "instructions": ".opencode/instructions/AGENTS.md"
 }

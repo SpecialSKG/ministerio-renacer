@@ -23,7 +23,7 @@ Debe usarse para auditar:
 
 ## Documentos que debe consultar
 
-1. `docs/agente-ia/checklist-auditoria-poc.md`
+1. `.opencode/instructions/agente-ia/checklist-auditoria-poc.md`
 2. `docs/06-trd-requerimientos-tecnicos.md`
 3. `docs/07-brief-diseno-ui-ux.md`
 4. `docs/08-app-flow.md`
