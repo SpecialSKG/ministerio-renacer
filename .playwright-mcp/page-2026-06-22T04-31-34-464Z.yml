@@ -1,0 +1,23 @@
+- generic [active] [ref=e1]:
+  - link "Saltar al contenido principal" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - heading "Ministerio Renacer" [level=1] [ref=e4]
+    - navigation "Navegación principal" [ref=e5]:
+      - list [ref=e6]:
+        - listitem [ref=e7]:
+          - link "Inicio" [ref=e8] [cursor=pointer]:
+            - /url: "#/inicio"
+        - listitem [ref=e9]:
+          - link "Eventos" [ref=e10] [cursor=pointer]:
+            - /url: "#/eventos"
+        - listitem [ref=e11]:
+          - link "Cantos" [ref=e12] [cursor=pointer]:
+            - /url: "#/cantos"
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - heading "Bienvenido al Ministerio Renacer" [level=2] [ref=e15]
+      - paragraph [ref=e16]: Plataforma del ministerio de m\u00fasica para la gesti\u00f3n de eventos, cantos y repertorios lit\u00fargicos.
+      - generic [ref=e17]: ✅ Datos cargados correctamente.
+  - contentinfo [ref=e18]:
+    - paragraph [ref=e19]: © 2026 Ministerio Renacer. Todos los derechos reservados.

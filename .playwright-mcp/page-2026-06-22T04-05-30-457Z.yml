@@ -1,0 +1,10 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - heading "Ministerio Renacer" [level=1] [ref=e3]
+  - main [ref=e4]:
+    - generic [ref=e5]:
+      - heading "Bienvenido al Ministerio Renacer" [level=2] [ref=e6]
+      - paragraph [ref=e7]: Plataforma del ministerio de m\u00fasica para la gesti\u00f3n de eventos, cantos y repertorios lit\u00fargicos.
+      - generic [ref=e8]: ✅ Datos cargados correctamente.
+  - contentinfo [ref=e9]:
+    - paragraph [ref=e10]: © 2026 Ministerio Renacer. Todos los derechos reservados.
