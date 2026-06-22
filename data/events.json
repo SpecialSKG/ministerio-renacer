@@ -6,25 +6,25 @@
     "date": "2026-07-04",
     "time": "18:00",
     "place": "Sala de Música Principal",
-    "status": "confirmado",
+    "status": "published",
     "meetingTime": "17:30",
     "description": "Primer ensayo del mes para preparar el repertorio del domingo.",
     "dressCodeMen": "Camisa blanca, pantalón oscuro",
     "dressCodeWomen": "Vestido formal o falda larga",
-    "musicFormat": "acústico",
+    "musicFormat": "acustico",
     "repertoireId": "rep-001"
   },
   {
     "id": "evt-002",
     "title": "Eucaristía Dominical",
-    "type": "eucaristia",
+    "type": "misa",
     "date": "2026-07-05",
     "time": "10:00",
     "place": "Templo Principal",
-    "status": "confirmado",
+    "status": "published",
     "meetingTime": "09:15",
     "description": "Misa dominical con participación del ministerio de música.",
-    "musicFormat": "amplificado",
+    "musicFormat": "mixto",
     "repertoireId": null
   }
 ]
