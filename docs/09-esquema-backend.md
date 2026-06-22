@@ -1,3 +1,7 @@
+> **ETAPA MODERNA — NO IMPLEMENTAR EN POC.**  
+> Este documento describe la arquitectura de backend para la etapa moderna.  
+> La POC actual es **HTML/CSS/JS vanilla sin backend**. Todo el contenido vive en archivos JSON estáticos en `data/`.
+
 # Esquema del BackEnd
 
 ## Proyecto

@@ -127,7 +127,7 @@ gantt
     title Cronograma de Sprints (POC) 
     dateFormat  YYYY-MM-DD
     section Sprint 1
-    Diseño de interfaz y planificaci\u00f3n :done, 2019-10-01, 3d
+    Diseño de interfaz y planificaci\u00f3n :done, 2026-06-01, 3d
     Maquetaci\u00f3n landing y estilos      :active, dev1, after des, 5d
     Despliegue inicial (versi\u00f3n v1) :test, after dev1, 2d
     section Sprint 2

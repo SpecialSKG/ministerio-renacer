@@ -229,7 +229,7 @@ Auditar antes de marcar listo.
 
 ### Documentos que debe consultar
 
-- `docs/agente-ia/checklist-auditoria-poc.md`
+- `.opencode/instructions/agente-ia/checklist-auditoria-poc.md`
 - `docs/06-trd-requerimientos-tecnicos.md`
 - `docs/07-brief-diseno-ui-ux.md`
 - `docs/08-app-flow.md`
