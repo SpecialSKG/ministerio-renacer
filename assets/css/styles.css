@@ -55,36 +55,89 @@ body {
 header {
   background-color: var(--color-primary);
   color: #ffffff;
-  padding: calc(var(--spacing-unit) * 2) var(--spacing-unit);
+  padding: var(--space-md) var(--space-md);
   text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 header h1 {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 1.75rem;
+  font-size: 1.5rem;
+}
+
+header nav ul {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-sm) 0 0;
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+header nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: var(--space-xs) 0;
+}
+
+header nav a:hover {
+  text-decoration: underline;
+  color: var(--color-accent);
 }
 
 /* ---- Main ---- */
 main {
   flex: 1;
-  padding: var(--spacing-unit);
 }
 
 /* ---- Footer ---- */
 footer {
-  background-color: var(--color-primary);
+  background-color: var(--color-primary-dark);
   color: #ffffff;
   text-align: center;
-  padding: var(--spacing-unit);
-  font-size: 0.875rem;
+  padding: var(--space-xl) var(--space-md);
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+footer p {
+  margin: var(--space-xs) 0;
 }
 
 /* ---- Container / Wrapper ---- */
 .container {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 var(--spacing-unit);
+  padding: 0 var(--space-md);
+}
+
+/* ---- Section ---- */
+.section {
+  padding: var(--space-2xl) var(--space-md);
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  color: var(--color-primary-dark);
+  text-align: center;
+  margin: 0 0 var(--space-lg);
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--color-muted);
+  max-width: 600px;
+  margin: 0 auto var(--space-lg);
+}
+
+/* ---- Hidden ---- */
+.hidden {
+  display: none !important;
 }
 
 /* ---- Status message ---- */
