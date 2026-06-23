@@ -86,7 +86,7 @@ header nav a {
 
 header nav a:hover {
   text-decoration: underline;
-  color: var(--color-accent);
+  opacity: 0.85;
 }
 
 /* ---- Main ---- */
@@ -196,7 +196,7 @@ footer p {
 }
 
 .btn-primary:hover {
-  background-color: #b8894a;
+  background-color: #C49580;
 }
 
 .btn-secondary {
@@ -452,7 +452,7 @@ html {
 }
 
 header a:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--color-accent);
   outline-offset: 3px;
 }
 
