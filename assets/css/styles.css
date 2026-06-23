@@ -5,19 +5,19 @@
 
 /* ---- Variables ---- */
 :root {
-  --color-bg: #f8f6f2;
+  --color-bg: #F2F0ED;
   --color-surface: #ffffff;
-  --color-text: #252525;
-  --color-muted: #666666;
-  --color-primary: #7a3e2d;
-  --color-primary-dark: #55291f;
-  --color-border: #e6ded6;
-  --color-accent: #c89b5a;
+  --color-text: #2C2C2C;
+  --color-muted: #7A7A7A;
+  --color-primary: #8FAA8A;
+  --color-primary-dark: #6F8A6A;
+  --color-border: #E0DCD4;
+  --color-accent: #D4A890;
   --font-body: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   --font-heading: 'Georgia', 'Times New Roman', Times, serif;
   --spacing-unit: 1rem;
-  --radius-card: 8px;
-  --shadow-card: 0 1px 3px rgba(0,0,0,0.08);
+  --radius-card: 12px;
+  --shadow-card: 0 4px 12px rgba(143, 170, 138, 0.12);
   --max-width: 1200px;
   --space-xs: 0.5rem;
   --space-sm: 0.75rem;
