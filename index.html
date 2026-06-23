@@ -9,26 +9,105 @@
 </head>
 <body>
   <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  
   <header>
     <h1>Ministerio Renacer</h1>
     <nav aria-label="Navegación principal">
       <ul>
-        <li><a href="#/inicio">Inicio</a></li>
-        <li><a href="#/eventos">Eventos</a></li>
-        <li><a href="#/cantos">Cantos</a></li>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#eventos">Eventos</a></li>
+        <li><a href="#cantos">Cantos</a></li>
+        <li><a href="#contacto">Contacto</a></li>
       </ul>
     </nav>
   </header>
 
   <main id="main-content">
-    <section id="app">
-      <h2>Bienvenido al Ministerio Renacer</h2>
-      <p>Plataforma del ministerio de música para la gestión de eventos, cantos y repertorios litúrgicos.</p>
-      <div id="status"></div>
+    
+    <!-- Hero -->
+    <section id="inicio" class="hero">
+      <h2>Servir a través de la música</h2>
+      <p>Un ministerio dedicado a la alabanza, la liturgia y el crecimiento musical en nuestra comunidad.</p>
+      <div class="cta-group">
+        <a href="#eventos" class="btn btn-primary">Ver próximos eventos</a>
+        <a href="#cantos" class="btn btn-secondary">Ver cantos</a>
+      </div>
     </section>
+
+    <!-- Quiénes somos -->
+    <section id="nosotros" class="section">
+      <div class="container">
+        <h2 class="section-title">Quiénes somos</h2>
+        <div class="about-content">
+          <p>Somos un grupo de músicos y cantores comprometidos con el servicio litúrgico en nuestra parroquia. Nuestro objetivo es acompañar la celebración con música que eleve el espíritu y congregue a la comunidad en la fe. Ensayamos semanalmente para preparar cada evento con dedicación y excelencia.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cómo nos organizamos -->
+    <section id="organizacion" class="section">
+      <div class="container">
+        <h2 class="section-title">Cómo nos organizamos</h2>
+        <div class="org-grid">
+          <article class="org-card">
+            <div class="icon">🎵</div>
+            <h3>Ensayos semanales</h3>
+            <p>Nos reunimos cada semana para preparar el repertorio y afinar detalles musicales para los próximos eventos.</p>
+          </article>
+          <article class="org-card">
+            <div class="icon">⛪</div>
+            <h3>Eventos litúrgicos</h3>
+            <p>Participamos en misas, retiros, vigilias y celebraciones especiales con música adaptada a cada ocasión.</p>
+          </article>
+          <article class="org-card">
+            <div class="icon">📖</div>
+            <h3>Biblioteca de cantos</h3>
+            <p>Contamos con una colección organizada de cantos con letras y acordes para consulta rápida de los miembros.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Próximos eventos -->
+    <section id="eventos" class="section">
+      <div class="container">
+        <h2 class="section-title">Próximos eventos</h2>
+        <div id="events-container" class="events-grid"></div>
+        <div id="events-empty" class="empty-state hidden">
+          <p>No hay eventos publicados por ahora.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cantos (placeholder) -->
+    <section id="cantos" class="section">
+      <div class="container">
+        <h2 class="section-title">Biblioteca de cantos</h2>
+        <div class="canto-placeholder">
+          <p>Explora nuestra colección de cantos litúrgicos con letras y acordes.</p>
+          <a href="#" class="btn btn-primary">Ir a cantos</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" class="section">
+      <div class="container">
+        <h2 class="section-title">Contacto</h2>
+        <div class="contact-content">
+          <p><span class="contact-label">Ministerio Renacer</span></p>
+          <p>Comunidad parroquial · Música para la liturgia</p>
+          <p>Coordinación: coordinacion@ministeriorenacer.org</p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer>
+    <p><strong>Ministerio Renacer</strong></p>
+    <p>Sirviendo a través de la música</p>
     <p>&copy; 2026 Ministerio Renacer. Todos los derechos reservados.</p>
   </footer>
 
