@@ -12,33 +12,79 @@ async function loadJSON(url) {
 }
 
 /**
- * Inicializa la aplicación: carga los 3 archivos JSON y muestra confirmación.
+ * Genera el HTML de una card de evento.
+ * @param {Object} event - Datos del evento.
+ * @returns {string} HTML de la card.
+ */
+function eventCardHTML(event) {
+  const date = new Date(event.date + 'T' + (event.time || '00:00'));
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = date.toLocaleDateString('es', { month: 'short' });
+
+  return `
+    <article class="event-card">
+      <div class="event-date">
+        <span class="day">${day}</span>
+        <span class="month">${month}</span>
+      </div>
+      <div class="event-info">
+        <span class="event-type">${event.type}</span>
+        <h3>${event.title}</h3>
+        <p class="event-meta">🕐 ${event.time} · 📍 ${event.place}</p>
+      </div>
+    </article>
+  `;
+}
+
+/**
+ * Renderiza los próximos eventos publicados en el contenedor.
+ * @param {Array} events - Lista de eventos.
+ */
+function renderUpcomingEvents(events) {
+  const container = document.getElementById('events-container');
+  const empty = document.getElementById('events-empty');
+
+  if (!container) return;
+
+  const upcoming = events
+    .filter(function(e) { return e.status === 'published'; })
+    .sort(function(a, b) { return a.date.localeCompare(b.date); });
+
+  if (upcoming.length === 0) {
+    container.innerHTML = '';
+    if (empty) empty.classList.remove('hidden');
+    return;
+  }
+
+  if (empty) empty.classList.add('hidden');
+  container.innerHTML = upcoming.map(eventCardHTML).join('');
+}
+
+/**
+ * Muestra mensaje de error si no se pudieron cargar los eventos.
+ */
+function showEventsError() {
+  const container = document.getElementById('events-container');
+  const empty = document.getElementById('events-empty');
+  if (container) {
+    container.innerHTML = '';
+  }
+  if (empty) {
+    empty.textContent = 'No se pudieron cargar los eventos. Verifica los archivos de datos.';
+    empty.classList.remove('hidden');
+  }
+}
+
+/**
+ * Inicializa la aplicación.
  */
 async function initApp() {
-  const statusEl = document.getElementById('status');
-  
   try {
     const events = await loadJSON('./data/events.json');
-    console.log(`✅ events.json cargado — ${events.length} evento(s)`);
-    
-    const songs = await loadJSON('./data/songs.json');
-    console.log(`✅ songs.json cargado — ${songs.length} canto(s)`);
-    
-    const repertoires = await loadJSON('./data/repertoires.json');
-    console.log(`✅ repertoires.json cargado — ${repertoires.length} repertorio(s)`);
-    
-    if (statusEl) {
-      statusEl.textContent = '✅ Datos cargados correctamente.';
-      statusEl.className = 'status-message success';
-    }
-    
-    console.log('🚀 Ministerio Renacer — esqueleto funcional listo');
+    renderUpcomingEvents(events);
   } catch (error) {
-    console.error('❌ Error al cargar datos:', error.message);
-    if (statusEl) {
-      statusEl.textContent = `❌ Error: ${error.message}`;
-      statusEl.className = 'status-message error';
-    }
+    console.error('Error al cargar datos:', error.message);
+    showEventsError();
   }
 }
 
