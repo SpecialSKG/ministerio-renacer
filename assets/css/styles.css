@@ -390,22 +390,58 @@ footer p {
   border: 1px solid #f5c6cb;
 }
 
-/* ---- Media query: escritorio incipiente ---- */
+/* ---- Smooth scroll ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---- Media query: tablet/desktop ---- */
 @media (min-width: 768px) {
   header {
-    padding: calc(var(--spacing-unit) * 3) calc(var(--spacing-unit) * 2);
+    padding: var(--space-lg) var(--space-xl);
   }
 
   header h1 {
-    font-size: 2.25rem;
+    font-size: 1.75rem;
   }
 
-  main {
-    padding: calc(var(--spacing-unit) * 2);
+  header nav ul {
+    gap: var(--space-xl);
   }
 
-  .container {
-    padding: 0 calc(var(--spacing-unit) * 2);
+  .hero {
+    padding: var(--space-2xl) var(--space-xl);
+  }
+
+  .hero h2 {
+    font-size: 2.5rem;
+  }
+
+  .cta-group {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .org-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section {
+    padding: var(--space-2xl) var(--space-xl);
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .events-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
