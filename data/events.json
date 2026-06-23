@@ -26,5 +26,18 @@
     "description": "Misa dominical con participación del ministerio de música.",
     "musicFormat": "mixto",
     "repertoireId": null
+  },
+  {
+    "id": "evt-003",
+    "title": "Taller de Canto",
+    "type": "taller",
+    "date": "2026-07-12",
+    "time": "16:00",
+    "place": "Salón Parroquial",
+    "status": "published",
+    "meetingTime": "15:30",
+    "description": "Taller de técnica vocal para miembros del ministerio.",
+    "musicFormat": "acustico",
+    "repertoireId": null
   }
 ]
