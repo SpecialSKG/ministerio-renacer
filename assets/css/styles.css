@@ -459,6 +459,12 @@ html {
   .section {
     padding: var(--space-2xl) var(--space-xl);
   }
+  .section-compact {
+    padding: var(--space-xl) var(--space-xl);
+  }
+  .section-spacious {
+    padding: calc(var(--space-2xl) * 1.3) var(--space-xl);
+  }
 
   .section-title {
     font-size: 2.1rem;
