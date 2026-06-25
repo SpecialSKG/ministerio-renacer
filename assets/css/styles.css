@@ -125,6 +125,14 @@ footer p {
   background-color: var(--color-bg-alt);
 }
 
+.section-compact {
+  padding: var(--space-xl) var(--space-md);
+}
+
+.section-spacious {
+  padding: calc(var(--space-2xl) * 1.3) var(--space-md);
+}
+
 .section-title {
   font-family: var(--font-heading);
   font-size: 1.75rem;
