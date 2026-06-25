@@ -147,6 +147,8 @@ footer p {
 
 /* ---- Hero ---- */
 .hero {
+  position: relative;
+  overflow: hidden;
   background-color: var(--color-primary-dark);
   color: #ffffff;
   text-align: center;
@@ -474,4 +476,37 @@ header a:focus-visible {
 /* ---- Móvil: eliminar delay táctil de 300ms ---- */
 a, button, [role="button"] {
   touch-action: manipulation;
+}
+
+/* ---- Hero decoration ---- */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: clamp(200px, 40vw, 400px);
+  height: clamp(200px, 40vw, 400px);
+  border-radius: 40% 60% 60% 40% / 40% 50% 50% 60%;
+  background: var(--color-accent);
+  opacity: 0.08;
+  top: -80px;
+  right: -80px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  width: clamp(150px, 25vw, 250px);
+  height: clamp(150px, 25vw, 250px);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  bottom: -60px;
+  left: -60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
 }
