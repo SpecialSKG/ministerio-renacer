@@ -18,7 +18,7 @@ El proyecto usa dos ubicaciones de skills:
 
 ```txt
 .agents/skills/
-.opencode/agents/skills/
+.opencode/skills/
 ```
 
 Esta separación es intencional.
@@ -51,7 +51,7 @@ Estas skills pueden ayudar, pero no definen el alcance del proyecto.
 
 ---
 
-## 3. `.opencode/agents/skills/`
+## 3. `.opencode/skills/`
 
 Esta carpeta contiene skills propias del proyecto.
 
@@ -69,7 +69,7 @@ Estas skills sí pertenecen directamente a `ministerio-renacer`.
 ### Rol de esta carpeta
 
 ```txt
-.opencode/agents/skills/ = reglas y comportamiento específico del proyecto
+.opencode/skills/ = reglas y comportamiento específico del proyecto
 ```
 
 Estas skills mandan sobre la POC.
@@ -88,7 +88,7 @@ Orden de prioridad:
 
 1. `.opencode/instructions/AGENTS.md`
 2. Documentos principales en `docs/`
-3. Skills propias en `.opencode/agents/skills/`
+3. Skills propias en `.opencode/skills/`
 4. Skills externas en `.agents/skills/`
 5. Supuestos del agente
 
@@ -436,7 +436,7 @@ Mantener esta arquitectura:
 .agents/skills/
   → skills externas de apoyo
 
-.opencode/agents/skills/
+.opencode/skills/
   → skills propias que mandan sobre el proyecto
 ```
 

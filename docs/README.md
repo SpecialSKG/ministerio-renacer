@@ -29,6 +29,6 @@
 
 ## Skills del proyecto
 
-Las skills propias están en `.opencode/agents/skills/`. Las skills externas en `.agents/skills/`.
+Las skills propias están en `.opencode/skills/`. Las skills externas en `.agents/skills/`.
 
 Ver `.opencode/instructions/AGENTS.md` para la guía completa de agentes y skills.

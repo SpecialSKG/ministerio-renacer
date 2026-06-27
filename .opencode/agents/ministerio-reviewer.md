@@ -14,7 +14,7 @@ permission:
   webfetch: ask
   websearch: ask
   external_directory:
-    ".opencode/agents/skills/**": allow
+    ".opencode/skills/**": allow
     ".agents/skills/**": allow
   skill:
     poc-qa: allow
@@ -78,7 +78,7 @@ Lee `.opencode/instructions/AGENTS.md` y `docs/README.md`.
 ¿Existe `.agents/skills/resumen.md`?
 ├── SÍ → Leerlo. Identificar skills relevantes para este plan.
 │         Leer el contenido COMPLETO de cada skill relevante.
-└── NO → Escanear `.agents/skills/` y `.opencode/agents/skills/`.
+└── NO → Escanear `.agents/skills/` y `.opencode/skills/`.
 ```
 
 No puedes auditar contra una skill que no hayas leído completa.

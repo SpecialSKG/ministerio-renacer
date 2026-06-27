@@ -13,7 +13,7 @@ Este paquete contiene archivos sugeridos para fortalecer el proyecto `ministerio
 - `.opencode/agents/ministerio-builder.md`
 - `.opencode/agents/ministerio-reviewer.md`
 - `.opencode/agents/ministerio-docs.md`
-- `.opencode/agents/skills/` con versiones corregidas de las skills propias.
+- `.opencode/skills/` con versiones corregidas de las skills propias.
 
 ## Uso recomendado
 

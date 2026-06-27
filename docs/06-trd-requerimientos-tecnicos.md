@@ -400,7 +400,7 @@ El proyecto puede usar OpenCode como asistente de desarrollo.
 Elementos actuales esperados:
 
 - `.opencode/instructions/AGENTS.md`
-- `.opencode/agents/skills/`
+- `.opencode/skills/`
 - `opencode.json`
 - `skills-lock.json`
 

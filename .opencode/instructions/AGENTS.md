@@ -39,7 +39,7 @@ Consult these before major work:
 | `ministerio-reviewer` | `docs/reports/*audit*.md` (ask) | QA before marking done |
 | `ministerio-docs` | `docs/**`, `README.md` (ask) | Maintaining documentation |
 
-## Project skills (`.opencode/agents/skills/`)
+## Project skills (`.opencode/skills/`)
 
 - `static-frontend` — build HTML/CSS/JS pages
 - `json-content` — maintain event/song/repertoire JSON data

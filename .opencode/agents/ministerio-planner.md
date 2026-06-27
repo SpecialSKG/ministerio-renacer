@@ -12,7 +12,7 @@ permission:
   webfetch: ask
   websearch: ask
   external_directory:
-    ".opencode/agents/skills/**": allow
+    ".opencode/skills/**": allow
     ".agents/skills/**": allow
   skill:
     poc-planner: allow
@@ -53,7 +53,7 @@ Confirmar en UNA línea: "Contexto cargado: Ministerio Renacer · HTML/CSS/JS/JS
 ```
 ¿Existe `.agents/skills/resumen.md`?
 ├── SÍ → Leerlo. Cruzar con la petición.
-└── NO → Escanear `.agents/skills/` y `.opencode/agents/skills/`.
+└── NO → Escanear `.agents/skills/` y `.opencode/skills/`.
 ```
 
 ---

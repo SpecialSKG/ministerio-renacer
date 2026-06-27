@@ -15,7 +15,7 @@ permission:
   webfetch: ask
   websearch: ask
   external_directory:
-    ".opencode/agents/skills/**": allow
+    ".opencode/skills/**": allow
     ".agents/skills/**": allow
   skill:
     poc-planner: allow
