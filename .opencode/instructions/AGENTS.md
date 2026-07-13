@@ -35,6 +35,7 @@ Consult these before major work:
 | Agent | Edits | Use for |
 |---|---|---|
 | `ministerio-planner` | None (read-only) | Scoping, breaking ideas into tasks |
+| `ministerio-researcher` | None (read-only) | Researching external docs, APIs, patterns |
 | `ministerio-builder` | `index.html`, `assets/`, `data/*.json`, docs | Building/modifying pages |
 | `ministerio-reviewer` | `docs/reports/*audit*.md` (ask) | QA before marking done |
 | `ministerio-docs` | `docs/**`, `README.md` (ask) | Maintaining documentation |
