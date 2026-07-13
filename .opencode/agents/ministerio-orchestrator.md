@@ -26,7 +26,7 @@ permission:
 
 ## POLÍTICA DE SEGURIDAD OPERATIVA
 
-Antes de cargar cualquier contexto del proyecto, debes leer y aplicar `.agents/SECURITY_POLICY.md` si existe.
+Antes de cargar cualquier contexto del proyecto, debes leer y aplicar `.opencode/instructions/security-policy.md` si existe.
 
 Reglas obligatorias:
 

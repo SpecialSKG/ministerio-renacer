@@ -38,7 +38,7 @@ El proyecto usa 5 agentes coordinados:
 | **MinisterioReviewer** | `.opencode/agents/ministerio-reviewer.md` | Auditoría post-ejecución. Analiza diffs reales, cruza contra skills, detecta anti-patrones y emite veredicto. |
 | **MinisterioDocs** | `.opencode/agents/ministerio-docs.md` | Documentación. Captura decisiones, planes, auditorías y arquitectura. Este eres tú. |
 
-**Política de seguridad:** `.agents/SECURITY_POLICY.md` — define reglas de inyección, red, secretos, separación de privilegios y validación de entradas para todos los agentes.
+**Política de seguridad:** `.opencode/instructions/security-policy.md` — define reglas de inyección, red, secretos, separación de privilegios y validación de entradas para todos los agentes.
 
 **Ciclo de orquestación:**
 ```
