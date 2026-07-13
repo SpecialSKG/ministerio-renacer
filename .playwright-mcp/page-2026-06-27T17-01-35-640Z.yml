@@ -1,0 +1,100 @@
+- generic [ref=e1]:
+  - link "Saltar al contenido principal" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner [ref=e3]:
+    - heading "Ministerio Renacer" [level=1] [ref=e4]
+    - navigation "Navegación principal" [ref=e5]:
+      - list [ref=e6]:
+        - listitem [ref=e7]:
+          - link "Inicio" [active] [ref=e8] [cursor=pointer]:
+            - /url: "#/inicio"
+        - listitem [ref=e9]:
+          - link "Nosotros" [ref=e10] [cursor=pointer]:
+            - /url: "#/nosotros"
+        - listitem [ref=e11]:
+          - link "Eventos" [ref=e12] [cursor=pointer]:
+            - /url: "#/eventos"
+        - listitem [ref=e13]:
+          - link "Cantos" [ref=e14] [cursor=pointer]:
+            - /url: "#/cantos"
+        - listitem [ref=e15]:
+          - link "Contacto" [ref=e16] [cursor=pointer]:
+            - /url: "#/contacto"
+  - main [ref=e17]:
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - heading "Servir a través de la música" [level=2] [ref=e20]
+        - paragraph [ref=e21]: Un ministerio dedicado a la alabanza, la liturgia y el crecimiento musical en nuestra comunidad.
+        - generic [ref=e22]:
+          - link "Ver próximos eventos" [ref=e23] [cursor=pointer]:
+            - /url: "#/eventos"
+          - link "Ver cantos" [ref=e24] [cursor=pointer]:
+            - /url: "#/cantos"
+      - generic [ref=e26]:
+        - heading "Quiénes somos" [level=2] [ref=e27]
+        - paragraph [ref=e29]: Somos un grupo de músicos y cantores comprometidos con el servicio litúrgico en nuestra parroquia. Nuestro objetivo es acompañar la celebración con música que eleve el espíritu y congregue a la comunidad en la fe. Ensayamos semanalmente para preparar cada evento con dedicación y excelencia.
+      - generic [ref=e31]:
+        - heading "Cómo nos organizamos" [level=2] [ref=e32]
+        - generic [ref=e33]:
+          - article [ref=e34]:
+            - img [ref=e36]
+            - heading "Ensayos semanales" [level=3] [ref=e40]
+            - paragraph [ref=e41]: Nos reunimos cada semana para preparar el repertorio y afinar detalles musicales para los próximos eventos.
+          - article [ref=e42]:
+            - img [ref=e44]
+            - heading "Eventos litúrgicos" [level=3] [ref=e47]
+            - paragraph [ref=e48]: Participamos en misas, retiros, vigilias y celebraciones especiales con música adaptada a cada ocasión.
+          - article [ref=e49]:
+            - img [ref=e51]
+            - heading "Biblioteca de cantos" [level=3] [ref=e54]
+            - paragraph [ref=e55]: Contamos con una colección organizada de cantos con letras y acordes para consulta rápida de los miembros.
+      - generic [ref=e57]:
+        - heading "Próximos eventos" [level=2] [ref=e58]
+        - generic [ref=e59]:
+          - link [ref=e60] [cursor=pointer]:
+            - /url: "#/evento/evt-001"
+            - article [ref=e61]:
+              - generic [ref=e62]:
+                - generic [ref=e63]: "04"
+                - generic [ref=e64]: jul
+              - generic [ref=e65]:
+                - generic [ref=e66]: ensayo
+                - heading "Ensayo de Coro — Semana 1" [level=3] [ref=e67]
+                - paragraph [ref=e68]: 🕐 18:00 · 📍 Sala de Música Principal
+          - link [ref=e69] [cursor=pointer]:
+            - /url: "#/evento/evt-002"
+            - article [ref=e70]:
+              - generic [ref=e71]:
+                - generic [ref=e72]: "05"
+                - generic [ref=e73]: jul
+              - generic [ref=e74]:
+                - generic [ref=e75]: misa
+                - heading "Eucaristía Dominical" [level=3] [ref=e76]
+                - paragraph [ref=e77]: 🕐 10:00 · 📍 Templo Principal
+          - link [ref=e78] [cursor=pointer]:
+            - /url: "#/evento/evt-003"
+            - article [ref=e79]:
+              - generic [ref=e80]:
+                - generic [ref=e81]: "12"
+                - generic [ref=e82]: jul
+              - generic [ref=e83]:
+                - generic [ref=e84]: taller
+                - heading "Taller de Canto" [level=3] [ref=e85]
+                - paragraph [ref=e86]: 🕐 16:00 · 📍 Salón Parroquial
+      - generic [ref=e88]:
+        - heading "Biblioteca de cantos" [level=2] [ref=e89]
+        - generic [ref=e90]:
+          - paragraph [ref=e91]: Explora nuestra colección de cantos litúrgicos con letras y acordes.
+          - link "Ir a cantos" [ref=e92] [cursor=pointer]:
+            - /url: "#/cantos"
+      - generic [ref=e94]:
+        - heading "Contacto" [level=2] [ref=e95]
+        - generic [ref=e96]:
+          - paragraph [ref=e97]: Ministerio Renacer
+          - paragraph [ref=e98]: Comunidad parroquial · Música para la liturgia
+          - paragraph [ref=e99]: "Coordinación: coordinacion@ministeriorenacer.org"
+  - contentinfo [ref=e100]:
+    - paragraph [ref=e101]:
+      - strong [ref=e102]: Ministerio Renacer
+    - paragraph [ref=e103]: Sirviendo a través de la música
+    - paragraph [ref=e104]: © 2026 Ministerio Renacer. Todos los derechos reservados.
