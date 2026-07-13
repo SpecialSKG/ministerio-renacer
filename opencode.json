@@ -3,7 +3,8 @@
   "instructions": [
     ".opencode/instructions/AGENTS.md",
     ".opencode/instructions/project-profile.md",
-    ".opencode/instructions/security-policy.md"
+    ".opencode/instructions/security-policy.md",
+    ".opencode/instructions/mcp-policy.md"
   ],
   "mcp": {
     "context7": {
