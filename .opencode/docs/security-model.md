@@ -62,19 +62,36 @@
 ### Supply chain y MCP
 
 - No se usan etiquetas móviles en configuración operativa.
-- MCP y sharing están deshabilitados al clonar.
+- El default del template es MCP y sharing deshabilitados al clonar; una
+  excepción explícita (`mcpExceptions` + permisos `ask`) puede habilitar un
+  MCP bajo guardas que el validador comprueba (ver "Excepción MCP").
 - Versiones y acciones CI se fijan.
 - Dependabot propone actualizaciones para revisión humana.
 - Cada MCP declara timeout y permisos por prefijo.
 - Playwright usa aislamiento, localhost, salida limitada y service workers
-  bloqueados en su perfil inicial.
-- El MCP personal no ejecuta shell, no escribe y no accede a red.
+  bloqueados en su perfil inicial; el validador exige conservar esas guardas
+  cuando está excepcionado.
+- El MCP personal no ejecuta shell, no escribe y no accede a red; no admite
+  excepción y permanece `disabled`/`deny`.
+
+### Excepción MCP
+
+El default del template es estricto: todo MCP inicia deshabilitado y sus
+herramientas denegadas. Una decisión explícita del usuario puede habilitar un
+MCP declarando una justificación no vacía en el bloque top-level
+`mcpExceptions` de `opencode.json`; el validador exige entonces permisos `ask`
+(nunca `allow`), conserva las guardas de aislamiento de Playwright (localhost
+exclusivo) y rechaza excepciones para `personal`. La política completa vive en
+[mcp-policy.md](../instructions/mcp-policy.md).
 
 ### Modo automático
 
 `--auto` puede aprobar operaciones marcadas como `ask`. Los límites de secretos,
-ALMA, delegación, MCP y comandos destructivos permanecen como `deny` y el
-validador comprueba que no desaparezcan.
+ALMA, delegación y comandos destructivos permanecen como `deny` y el
+validador comprueba que no desaparezcan. Los MCP conservan el mismo default
+estricto (deshabilitados y `deny`), pero una excepción explícita
+(`mcpExceptions` + permisos `ask`) puede habilitarlos bajo guardas verificadas
+por el validador; `personal` no admite excepción y permanece siempre `deny`.
 
 ### Acciones destructivas
 

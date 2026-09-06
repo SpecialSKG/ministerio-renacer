@@ -29,7 +29,7 @@
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
       },
       "oauth": false,
-      "enabled": false,
+      "enabled": true,
       "timeout": 10000
     },
     "playwright": {
@@ -52,7 +52,7 @@
         "--image-responses",
         "omit"
       ],
-      "enabled": false,
+      "enabled": true,
       "timeout": 15000
     },
     "personal": {
@@ -69,6 +69,10 @@
       "enabled": false,
       "timeout": 10000
     }
+  },
+  "mcpExceptions": {
+    "context7": "Autorizado por el usuario: consultar documentación actualizada de librerías y frameworks durante investigación.",
+    "playwright": "Autorizado por el usuario: QA local headless de la web estática contra localhost."
   },
   "permission": {
     "*": "ask",
@@ -140,8 +144,8 @@
     "task": {
       "*": "deny"
     },
-    "context7_*": "deny",
-    "playwright_*": "deny",
+    "context7_*": "ask",
+    "playwright_*": "ask",
     "personal_*": "deny"
   },
   "watcher": {

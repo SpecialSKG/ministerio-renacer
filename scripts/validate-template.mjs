@@ -142,16 +142,154 @@ if (config.permission?.task?.["*"] !== "deny") {
 if (config.permission?.doom_loop !== "deny") {
   fail("opencode.json: doom_loop debe detener repeticiones idénticas");
 }
+// Mecanismo de excepción MCP por decisión explícita.
+// Postura por defecto del template: todo MCP inicia deshabilitado y sus permisos
+// quedan denegados globalmente. Un proyecto puede habilitar un MCP (enabled: true)
+// con permisos ask únicamente si opencode.json declara una marca explícita en el
+// bloque top-level "mcpExceptions", con justificación no vacía por nombre de MCP:
+//   "mcpExceptions": { "context7": "Autorizado por el usuario: ..." }
+// Sin esa marca el validador conserva el default estricto. "personal" no admite
+// excepción. Las excepciones no relajan el resto de invariantes de seguridad.
+const mcpExceptions = config.mcpExceptions ?? {};
+const exceptionCache = new Map();
+function mcpException(name) {
+  if (exceptionCache.has(name)) return exceptionCache.get(name);
+  const raw = mcpExceptions[name];
+  let value;
+  if (raw === undefined) {
+    value = undefined;
+  } else if (typeof raw !== "string" || raw.trim() === "") {
+    fail(`opencode.json: mcpExceptions.${name} debe contener una justificación no vacía`);
+    value = undefined;
+  } else {
+    value = raw.trim();
+  }
+  exceptionCache.set(name, value);
+  return value;
+}
+
 for (const [name, mcp] of Object.entries(config.mcp ?? {})) {
-  if (mcp.enabled !== false) fail(`opencode.json: MCP ${name} debe iniciar deshabilitado`);
   if (!Number.isInteger(mcp.timeout) || mcp.timeout <= 0) {
     fail(`opencode.json: MCP ${name} debe declarar timeout positivo`);
   }
+  if (mcp.enabled !== false && mcp.enabled !== true) {
+    fail(`opencode.json: MCP ${name} debe declarar enabled como booleano`);
+  }
+  if (mcp.enabled === true && !mcpException(name)) {
+    fail(`opencode.json: MCP ${name} debe iniciar deshabilitado o declarar excepción en mcpExceptions`);
+  }
+}
+for (const name of Object.keys(mcpExceptions)) {
+  if (name === "personal") {
+    fail("opencode.json: personal no admite excepción; debe permanecer disabled/deny");
+    continue;
+  }
+  if (!config.mcp?.[name]) {
+    fail(`opencode.json: excepción declarada para MCP inexistente ${name}`);
+    continue;
+  }
+  // Toda excepción autoriza un MCP; sus tools deben quedar en ask, nunca allow.
+  // Guarda genérica: cubre también MCPs futuros sin manejo dedicado.
+  if (config.permission?.[`${name}_*`] !== "ask") {
+    fail(`opencode.json: ${name}_* debe usar ask cuando existe excepción declarada`);
+  }
 }
 for (const name of ["context7", "playwright", "personal"]) {
-  if (!config.mcp?.[name]) fail(`opencode.json: falta MCP opt-in ${name}`);
-  if (config.permission?.[`${name}_*`] !== "deny") {
-    fail(`opencode.json: ${name}_* debe estar denegado globalmente`);
+  const mcp = config.mcp?.[name];
+  if (!mcp) {
+    fail(`opencode.json: falta MCP opt-in ${name}`);
+    continue;
+  }
+  const exception = mcpException(name);
+  const permission = config.permission?.[`${name}_*`];
+  if (mcp.enabled === true) {
+    if (!exception) {
+      fail(`opencode.json: MCP ${name} debe iniciar deshabilitado sin excepción declarada`);
+    } else if (name === "personal") {
+      fail("opencode.json: personal debe iniciar deshabilitado (no admite excepción)");
+    } else {
+      if (permission !== "ask") {
+        fail(`opencode.json: ${name}_* debe usar ask cuando ${name} está habilitado por excepción`);
+      }
+      ok(`opencode.json: excepción MCP activa para ${name}: ${exception}`);
+    }
+  } else if (!exception && permission !== "deny") {
+    fail(`opencode.json: ${name}_* debe estar denegado globalmente (sin excepción declarada)`);
+  } else if (exception && permission === "allow") {
+    fail(`opencode.json: ${name}_* no debe usar allow ni con excepción declarada`);
+  }
+}
+// Invariantes de seguridad que una excepción no puede relajar.
+if (mcpException("playwright")) {
+  const tokens = (Array.isArray(config.mcp.playwright.command)
+    ? config.mcp.playwright.command.join(" ")
+    : ""
+  )
+    .split(/\s+/)
+    .filter(Boolean);
+  for (const flag of ["--isolated", "--headless", "--block-service-workers"]) {
+    if (!tokens.includes(flag)) {
+      fail(`opencode.json: playwright excepcionado debe conservar ${flag}`);
+    }
+  }
+  // Flags peligrosos: una excepción no puede relajar el sandbox ni abrir la
+  // sesión a tráfico remoto. Guarda futura: la config actual no los usa.
+  for (const flag of [
+    "--no-sandbox",
+    "--ignore-https-errors",
+    "--allow-unrestricted-file-access",
+    "--proxy-server",
+    "--cdp-endpoint",
+    "--remote-endpoint",
+  ]) {
+    const dangerous = tokens.find(
+      (token) => token === flag || token.startsWith(`${flag}=`),
+    );
+    if (dangerous) {
+      fail(`opencode.json: playwright excepcionado no debe usar ${flag}`);
+    }
+  }
+  // Exclusividad: la allowlist debe ser EXACTAMENTE localhost + 127.0.0.1.
+  // Un valor como "localhost,127.0.0.1,evil.com" debe fallar.
+  const hostsIndex = tokens.indexOf("--allowed-hosts");
+  const hosts = hostsIndex >= 0 ? (tokens[hostsIndex + 1] ?? "").split(",") : [];
+  const expectedHosts = new Set(["localhost", "127.0.0.1"]);
+  const observedHosts = new Set(hosts);
+  const hostsExact =
+    hosts.length > 0 &&
+    observedHosts.size === expectedHosts.size &&
+    [...expectedHosts].every((host) => observedHosts.has(host));
+  if (!hostsExact) {
+    fail("opencode.json: playwright excepcionado debe limitar --allowed-hosts EXACTAMENTE a localhost y 127.0.0.1 (sin otros hosts)");
+  }
+  // Exclusividad de orígenes: cada entrada debe ser un origen http(s) cuyo host
+  // sea localhost o 127.0.0.1 (con puerto numérico o comodín :*), sin otros.
+  const originsIndex = tokens.indexOf("--allowed-origins");
+  const originsValue = originsIndex >= 0 ? (tokens[originsIndex + 1] ?? "") : "";
+  const origins = originsValue
+    .split(";")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const originHost = (origin) => {
+    const match = origin.match(/^https?:\/\/([^/:;]+)(?::\*|:\d{1,5})?$/i);
+    return match ? match[1].toLowerCase() : undefined;
+  };
+  const originHosts = origins.map(originHost);
+  const originsOnlyLocal =
+    origins.length > 0 &&
+    originHosts.every((host) => host === "localhost" || host === "127.0.0.1") &&
+    originHosts.includes("localhost") &&
+    originHosts.includes("127.0.0.1");
+  if (!originsOnlyLocal) {
+    fail("opencode.json: playwright excepcionado debe limitar --allowed-origins exclusivamente a orígenes http(s) localhost y 127.0.0.1");
+  }
+}
+// context7 excepcionado conserva la invariante genérica de timeout positivo
+// (verificada para todo MCP arriba) y su url remota https.
+if (mcpException("context7")) {
+  const url = config.mcp.context7?.url;
+  if (typeof url !== "string" || !url.startsWith("https://")) {
+    fail("opencode.json: context7 excepcionado debe conservar url remota https");
   }
 }
 if (
