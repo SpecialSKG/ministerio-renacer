@@ -1,40 +1,39 @@
-# OS
+# Dependencias y builds
+node_modules/
+.opencode/node_modules/
+.opencode/package.json
+.opencode/package-lock.json
+.opencode/bun.lock
+vendor/
+dist/
+build/
+.next/
+coverage/
+.venv/
+__pycache__/
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets.*
+credentials.*
+
+# MCP / pruebas / logs
+.playwright-mcp/
+tools/personal-mcp/node_modules/
+tools/personal-mcp/config/project.local.json
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema
 .DS_Store
 Thumbs.db
-Desktop.ini
 
-# Editor
-*.swp
-*.swo
-*~
-.vscode/settings.json
-.idea/
-
-# Env
-.env
-.env.local
-.env.*.local
-
-# Node (if ever used)
-node_modules/
-
-# Logs
-*.log
-
-# Build / cache
-.cache/
-dist/
-.tmp/
-
-# Local servers
-.python-version
-
-# Archives
-*.zip
-*.rar
-*.7z
-
-# Playwright
-test-results/
-playwright-report/
-playwright/.cache/
+# Respaldo local del proyecto previo (absorbido a la raíz; no se versiona)
+Proyecto Actual/

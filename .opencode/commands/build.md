@@ -1,12 +1,13 @@
 ---
-description: Ejecuta un plan paso a paso. Implementa cambios en HTML, CSS, JS y JSON. Hace commits y persiste estado en reports/.
-agent: ministerio-builder
+description: Ejecuta un ciclo completo de implementación, revisión y seguridad cuando aplique.
+agent: base-orchestrator
 ---
 
-Ejecuta el siguiente plan completo del Ministerio Renacer.
-Opera en modo automático: implementa, verifica, commitea y actualiza reports/.
-No esperes confirmación entre pasos salvo errores bloqueantes, operaciones destructivas o red.
+Coordina la siguiente tarea respetando las reglas y el perfil. Implementa con
+`base-builder`, verifica con `base-reviewer` y usa `base-security` si toca
+autenticación, secretos, permisos, MCP, red, dependencias o datos sensibles.
+No cierres sin estado, evidencia, verificación, riesgos y acción siguiente.
 
-Plan:
+Tarea:
 
 $ARGUMENTS

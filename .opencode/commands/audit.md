@@ -1,11 +1,11 @@
 ---
-description: Audita la calidad de la POC. Revisa HTML, CSS, JS, JSON, navegación, accesibilidad y errores de consola. No modifica código.
-agent: ministerio-reviewer
+description: Audita los cambios actuales del repositorio.
+agent: base-reviewer
 ---
 
-Audita la POC del Ministerio Renacer. Revisa los cambios reales contra las skills del proyecto.
-Usa Playwright MCP si está disponible para probar en navegador.
-Emite veredicto con hallazgos por severidad.
+Audita cambios reales con evidencia. Separa regresiones de deuda previa, revisa
+correctitud, pruebas, accesibilidad y mantenibilidad, y emite estado, veredicto,
+severidad, riesgos y acción siguiente. No corrijas archivos.
 
 Contexto adicional:
 

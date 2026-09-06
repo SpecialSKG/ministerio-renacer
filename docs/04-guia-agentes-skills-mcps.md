@@ -1,5 +1,13 @@
 # Guía de Agentes, Skills y MCPs
 
+> **⚠️ NO VIGENTE — Documento histórico del proyecto previo**
+>
+> Esta guía describe la infraestructura OpenCode anterior (agentes `ministerio-*`,
+> skills `poc-*` y la configuración de MCP de ese momento). Fue reemplazada por
+> la línea base actual: agentes `base-*`, skills `special-*` y la política de
+> MCP opt-in. Se conserva únicamente como referencia y contexto histórico; no es
+> autoridad operativa.
+
 ## Proyecto
 
 **Ministerio Renacer — Plataforma web para ministerio de música**

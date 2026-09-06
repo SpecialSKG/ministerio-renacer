@@ -1,10 +1,25 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "default_agent": "base-orchestrator",
+  "autoupdate": "notify",
+  "tool_output": {
+    "max_lines": 1000,
+    "max_bytes": 49152
+  },
+  "compaction": {
+    "auto": true,
+    "prune": false,
+    "tail_turns": 3,
+    "reserved": 10000
+  },
   "instructions": [
-    ".opencode/instructions/AGENTS.md",
-    ".opencode/instructions/project-profile.md",
+    ".opencode/instructions/ALMA.md",
+    ".opencode/instructions/operating-principles.md",
     ".opencode/instructions/security-policy.md",
-    ".opencode/instructions/mcp-policy.md"
+    ".opencode/instructions/mcp-policy.md",
+    ".opencode/instructions/workflow.md",
+    ".opencode/instructions/agent-contracts.md",
+    ".opencode/instructions/project-profile.md"
   ],
   "mcp": {
     "context7": {
@@ -13,34 +28,138 @@
       "headers": {
         "CONTEXT7_API_KEY": "{env:CONTEXT7_API_KEY}"
       },
-      "enabled": true
+      "oauth": false,
+      "enabled": false,
+      "timeout": 10000
     },
     "playwright": {
       "type": "local",
-      "command": ["npx", "@playwright/mcp@latest"],
-      "enabled": true
+      "command": [
+        "npx",
+        "-y",
+        "@playwright/mcp@0.0.78",
+        "--isolated",
+        "--headless",
+        "--block-service-workers",
+        "--allowed-hosts",
+        "localhost,127.0.0.1",
+        "--allowed-origins",
+        "http://localhost:*;http://127.0.0.1:*",
+        "--output-dir",
+        ".playwright-mcp",
+        "--output-max-size",
+        "10485760",
+        "--image-responses",
+        "omit"
+      ],
+      "enabled": false,
+      "timeout": 15000
+    },
+    "personal": {
+      "type": "local",
+      "command": [
+        "node",
+        "tools/personal-mcp/src/index.mjs"
+      ],
+      "cwd": ".",
+      "environment": {
+        "PERSONAL_MCP_ROOT": ".",
+        "PERSONAL_MCP_CONFIG": "tools/personal-mcp/config/project.example.json"
+      },
+      "enabled": false,
+      "timeout": 10000
     }
   },
   "permission": {
+    "*": "ask",
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow",
+      "*.pem": "deny",
+      "*.key": "deny",
+      "*.p12": "deny",
+      "*.sqlite": "deny",
+      "*.db": "deny",
+      "secrets.*": "deny",
+      "credentials.*": "deny"
+    },
+    "list": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "edit": "ask",
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "rm *": "deny",
+      "rm -rf *": "deny",
+      "Remove-Item*": "deny",
+      "del *": "deny",
+      "rmdir *": "deny",
+      "git reset*": "deny",
+      "git clean*": "deny"
+    },
+    "question": "ask",
+    "doom_loop": "deny",
+    "webfetch": "ask",
+    "websearch": "ask",
+    "external_directory": "ask",
     "skill": {
-      "static-frontend": "allow",
-      "json-content": "allow",
-      "poc-planner": "allow",
-      "poc-qa": "allow",
-      "webapp-testing": "ask",
-      "frontend-design": "ask",
-      "web-design-guidelines": "ask",
-      "seo-audit": "ask",
-      "12-principles-of-animation": "ask",
-      "emilkowal-animations": "ask",
-      "emilkowalski-motion": "ask",
-      "impeccable": "ask",
-      "design-lab": "ask",
-      "design-taste-frontend": "ask",
-      "github-actions-docs": "ask",
-      "ui-skills-root": "ask",
+      "*": "ask",
+      "special-project-discovery": "allow",
+      "special-safe-implementation": "allow",
+      "special-code-review": "allow",
+      "special-security-audit": "allow",
+      "special-documentation": "allow",
+      "special-frontend-quality": "allow",
+      "special-data-content": "allow",
+      "special-context7-docs": "allow",
+      "animate": "allow",
+      "animate-expo": "allow",
+      "animation-vocabulary": "allow",
+      "apple-design": "allow",
+      "ask-sonner": "allow",
+      "emil-design-eng": "allow",
+      "find-animation-opportunities": "allow",
+      "improve-animations": "allow",
+      "pick-ui-library": "allow",
+      "prototype": "allow",
+      "review-animations": "allow",
+      "write-swift": "allow",
+      "interview-me": "allow",
+      "test-driven-development": "allow",
+      "debugging-and-error-recovery": "allow",
+      "performance-optimization": "allow",
+      "api-and-interface-design": "allow",
+      "interface-design": "allow"
+    },
+    "task": {
       "*": "deny"
-    }
+    },
+    "context7_*": "deny",
+    "playwright_*": "deny",
+    "personal_*": "deny"
   },
-  "plugin": ["@warp-dot-dev/opencode-warp"]
+  "watcher": {
+    "ignore": [
+      "node_modules/**",
+      ".opencode/node_modules/**",
+      "tools/personal-mcp/node_modules/**",
+      "vendor/**",
+      "dist/**",
+      "build/**",
+      ".git/**",
+      ".next/**",
+      "coverage/**",
+      ".venv/**",
+      "__pycache__/**",
+      ".playwright-mcp/**",
+      "*.log"
+    ]
+  },
+  "share": "disabled"
 }

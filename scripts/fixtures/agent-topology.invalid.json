@@ -1,0 +1,30 @@
+[
+  {
+    "name": "two-primary",
+    "file": ".opencode/agents/base-planner.md",
+    "find": "mode: subagent",
+    "replace": "mode: primary",
+    "expected": "debe existir exactamente un primary; observados 2"
+  },
+  {
+    "name": "leaf-task-ask",
+    "file": ".opencode/agents/base-planner.md",
+    "find": "  task: deny",
+    "replace": "  task: ask",
+    "expected": "agente hoja debe declarar task: deny"
+  },
+  {
+    "name": "direct-writer-command",
+    "file": ".opencode/commands/docs.md",
+    "find": "agent: base-orchestrator",
+    "replace": "agent: base-docs",
+    "expected": "debe enrutar a base-orchestrator"
+  },
+  {
+    "name": "agent-doom-loop-ask",
+    "file": ".opencode/agents/base-planner.md",
+    "find": "  doom_loop: deny",
+    "replace": "  doom_loop: ask",
+    "expected": "doom_loop debe detener repeticiones idénticas"
+  }
+]

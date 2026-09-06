@@ -1,0 +1,4 @@
+interface:
+  display_name: "Open Skill Creation"
+  short_description: "Extrae y fortalece skills reutilizables"
+  default_prompt: "Usa $special-skill-creation para convertir patrones comprobados del proyecto en una skill portable y validada."

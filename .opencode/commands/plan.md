@@ -1,12 +1,12 @@
 ---
-description: Genera un plan técnico detallado para una tarea de la POC. Analiza alcance, archivos, riesgos y pasos. No modifica archivos.
-agent: ministerio-planner
+description: Genera un plan técnico antes de implementar.
+agent: base-planner
 ---
 
-Genera un plan técnico completo para la siguiente tarea del Ministerio Renacer.
-Respeta el alcance de la POC estática (HTML/CSS/JS/JSON, sin backend, sin framework).
-Incluye checklist de commits atómicos y manifiesto del plan.
+Analiza la solicitud sin modificar archivos. Separa hechos y supuestos, detecta
+stack real ignorando el runtime de `.opencode/`, y entrega alcance, exclusiones,
+riesgos, pasos, criterios de aceptación, estado y acción siguiente.
 
-Tarea:
+Solicitud:
 
 $ARGUMENTS

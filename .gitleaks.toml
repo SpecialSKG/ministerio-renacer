@@ -1,0 +1,26 @@
+title = "OpenCode Base secret detection"
+
+# Conserva las reglas oficiales y agrega solo exclusiones propias del template.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Artefactos generados o dependencias que no pertenecen al template"
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)vendor/''',
+  '''(^|/)dist/''',
+  '''(^|/)build/''',
+  '''(^|/)coverage/''',
+  '''(^|/)\.playwright-mcp/''',
+  '''\.log$''',
+]
+
+[[allowlists]]
+description = "Marcadores explícitos usados en documentación y ejemplos"
+regexTarget = "match"
+regexes = [
+  '''(?i)your[-_ ]key[-_ ]here''',
+  '''(?i)replace[-_ ]me''',
+  '''(?i)example[-_ ]only''',
+]
