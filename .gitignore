@@ -34,6 +34,9 @@ yarn-error.log*
 session-*.md
 # Artefactos de QA del Orchestrator (screenshots de verificación, no se versionan)
 qa-*.png
+# Screenshots de QA de prototipos de rediseño (no se versionan)
+t5-mobile-375.png
+template3-mobile.png
 
 # Sistema
 .DS_Store
@@ -41,3 +44,6 @@ Thumbs.db
 
 # Respaldo local del proyecto previo (absorbido a la raíz; no se versiona)
 Proyecto Actual/
+
+# Prototipos de rediseño (no se versionan)
+prototypes/
