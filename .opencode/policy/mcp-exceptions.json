@@ -1,0 +1,5 @@
+{
+  "_comment": "Política de excepción MCP del template. opencode no lee este archivo (opencode.json no admite claves custom; el schema estricto rechaza mcpExceptions). scripts/validate-template.mjs lo exige para permitir enabled: true con permisos ask. Justificaciones no vacías en español, una por MCP. 'personal' no admite excepción. Las claves que empiezan con '_' son metadatos y no se interpretan como MCP.",
+  "context7": "Autorizado por el usuario: consultar documentación actualizada de librerías y frameworks durante investigación.",
+  "playwright": "Autorizado por el usuario: QA local headless de la web estática contra localhost."
+}

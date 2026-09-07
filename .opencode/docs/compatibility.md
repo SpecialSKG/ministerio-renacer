@@ -1,6 +1,6 @@
 # Compatibilidad verificada
 
-> Última revisión: 2026-08-23
+> Última revisión: 2026-09-06
 
 | Componente | Versión fijada | Uso |
 |---|---:|---|
@@ -31,6 +31,10 @@
   local se aislaron `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_CACHE_HOME` y
   `XDG_STATE_HOME` en el directorio temporal para evitar acceso a perfiles
   personales.
+- `opencode.json` no lleva claves custom: el schema estricto de OpenCode
+  `1.17.20` rechaza `mcpExceptions` como clave top-level. La marca de
+  excepción MCP vive en `.opencode/policy/mcp-exceptions.json`, que opencode
+  ignora por diseño y que `scripts/validate-template.mjs` lee como política.
 - Windows y Linux: matriz del job estructural.
 - Agentes: un primary, seis subagents, nueve comandos y permisos efectivos
   confirmados en la carga.

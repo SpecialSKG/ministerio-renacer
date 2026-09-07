@@ -70,10 +70,6 @@
       "timeout": 10000
     }
   },
-  "mcpExceptions": {
-    "context7": "Autorizado por el usuario: consultar documentación actualizada de librerías y frameworks durante investigación.",
-    "playwright": "Autorizado por el usuario: QA local headless de la web estática contra localhost."
-  },
   "permission": {
     "*": "ask",
     "read": {

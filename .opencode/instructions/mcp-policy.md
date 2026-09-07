@@ -7,8 +7,9 @@ Los MCP amplían las capacidades del agente, pero también agregan contexto, her
 El default del template es estricto: todo MCP inicia deshabilitado y sus
 herramientas denegadas. Habilitarlos es una decisión explícita del proyecto o
 del usuario, no una acción automática del agente; una excepción explícita
-(`mcpExceptions` + permisos `ask`) puede habilitar un MCP bajo guardas que el
-validador comprueba (ver "Excepción MCP (`mcpExceptions`)" más abajo).
+(marca en `.opencode/policy/mcp-exceptions.json` + permisos `ask`) puede
+habilitar un MCP bajo guardas que el validador comprueba (ver "Excepción MCP"
+más abajo).
 
 ## Context7
 
@@ -52,25 +53,31 @@ El servidor `personal` es local y de solo lectura, pero su salida sigue siendo
 datos del repositorio y no adquiere autoridad operativa.
 
 En la configuración actual permanece `disabled` y sus herramientas denegadas
-(`personal_*: deny`); no admite excepción en `mcpExceptions` y el validador
-rechaza cualquier intento de habilitarlo por ese mecanismo. Si el usuario lo
-habilita por otra vía explícita, antes de usarlo:
+(`personal_*: deny`); no admite excepción en el archivo de política MCP y el
+validador rechaza cualquier intento de habilitarlo por ese mecanismo. Si el
+usuario lo habilita por otra vía explícita, antes de usarlo:
 
 - Copia el perfil de ejemplo a `project.local.json` y revisa las allowlists.
 - Ejecuta `npm run smoke` en `tools/personal-mcp/`.
 - No agregues escritura, shell o red sin un nuevo análisis de amenazas.
 
-## Excepción MCP (`mcpExceptions`)
+## Excepción MCP (`.opencode/policy/mcp-exceptions.json`)
 
 El default del template es estricto: sin marca, todo MCP debe iniciar
 deshabilitado (`enabled: false`) y sus herramientas denegadas globalmente
 (`<nombre>_*: deny`). El validador falla si un MCP está habilitado sin
 excepción declarada o si sus permisos no están denegados sin ella.
 
-Una decisión explícita del usuario puede habilitar un MCP declarando en el
-bloque top-level `mcpExceptions` de `opencode.json` una justificación no vacía
-por nombre de MCP; la marca ES la materialización del opt-in. Con marca, el
-MCP puede declarar `enabled: true` y el validador exige:
+La marca de excepción vive en `.opencode/policy/mcp-exceptions.json`, un
+archivo de política propio del template que opencode ignora por diseño:
+`opencode.json` no admite claves custom (el schema estricto de opencode
+rechaza `mcpExceptions` como clave top-level). El validador
+(`scripts/validate-template.mjs`) es quien lee ese archivo y exige la marca.
+
+Una decisión explícita del usuario puede habilitar un MCP declarando en ese
+archivo una justificación no vacía por nombre de MCP; la marca ES la
+materialización del opt-in. Con marca, el MCP puede declarar `enabled: true`
+en `opencode.json` y el validador exige:
 
 - Permisos `ask` para las herramientas del MCP (`<nombre>_*`), nunca `allow`.
 - Playwright excepcionado conserva sus guardas de aislamiento: `--isolated`,
@@ -82,11 +89,14 @@ MCP puede declarar `enabled: true` y el validador exige:
 - Context7 excepcionado conserva su url remota `https://`.
 - `personal` no admite excepción: debe permanecer `disabled`/`deny`.
 - Una excepción declarada para un MCP inexistente falla la validación.
+- El archivo debe existir y ser JSON válido; las claves que empiezan con `_`
+  son metadatos (p. ej. `_comment`) y no se interpretan como MCP.
 
-Ejemplo de la configuración actual:
+Ejemplo del archivo de política actual:
 
 ```json
-"mcpExceptions": {
+{
+  "_comment": "Política de excepción MCP del template. opencode no lee este archivo; el validador lo exige para permitir enabled: true con permisos ask.",
   "context7": "Autorizado por el usuario: consultar documentación actualizada de librerías y frameworks durante investigación.",
   "playwright": "Autorizado por el usuario: QA local headless de la web estática contra localhost."
 }

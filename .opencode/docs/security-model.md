@@ -63,8 +63,9 @@
 
 - No se usan etiquetas móviles en configuración operativa.
 - El default del template es MCP y sharing deshabilitados al clonar; una
-  excepción explícita (`mcpExceptions` + permisos `ask`) puede habilitar un
-  MCP bajo guardas que el validador comprueba (ver "Excepción MCP").
+  excepción explícita (marca en `.opencode/policy/mcp-exceptions.json` +
+  permisos `ask`) puede habilitar un MCP bajo guardas que el validador
+  comprueba (ver "Excepción MCP").
 - Versiones y acciones CI se fijan.
 - Dependabot propone actualizaciones para revisión humana.
 - Cada MCP declara timeout y permisos por prefijo.
@@ -78,20 +79,23 @@
 
 El default del template es estricto: todo MCP inicia deshabilitado y sus
 herramientas denegadas. Una decisión explícita del usuario puede habilitar un
-MCP declarando una justificación no vacía en el bloque top-level
-`mcpExceptions` de `opencode.json`; el validador exige entonces permisos `ask`
-(nunca `allow`), conserva las guardas de aislamiento de Playwright (localhost
-exclusivo) y rechaza excepciones para `personal`. La política completa vive en
-[mcp-policy.md](../instructions/mcp-policy.md).
+MCP declarando una justificación no vacía en
+`.opencode/policy/mcp-exceptions.json`; `opencode.json` no lleva claves custom
+(el schema estricto de opencode rechaza `mcpExceptions`), por lo que la marca
+es política del validador, que la lee desde ese archivo. El validador exige
+entonces permisos `ask` (nunca `allow`), conserva las guardas de aislamiento
+de Playwright (localhost exclusivo) y rechaza excepciones para `personal`. La
+política completa vive en [mcp-policy.md](../instructions/mcp-policy.md).
 
 ### Modo automático
 
 `--auto` puede aprobar operaciones marcadas como `ask`. Los límites de secretos,
 ALMA, delegación y comandos destructivos permanecen como `deny` y el
 validador comprueba que no desaparezcan. Los MCP conservan el mismo default
-estricto (deshabilitados y `deny`), pero una excepción explícita
-(`mcpExceptions` + permisos `ask`) puede habilitarlos bajo guardas verificadas
-por el validador; `personal` no admite excepción y permanece siempre `deny`.
+estricto (deshabilitados y `deny`), pero una excepción explícita (marca en
+`.opencode/policy/mcp-exceptions.json` + permisos `ask`) puede habilitarlos
+bajo guardas verificadas por el validador; `personal` no admite excepción y
+permanece siempre `deny`.
 
 ### Acciones destructivas
 

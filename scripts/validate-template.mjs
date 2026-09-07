@@ -145,12 +145,32 @@ if (config.permission?.doom_loop !== "deny") {
 // Mecanismo de excepción MCP por decisión explícita.
 // Postura por defecto del template: todo MCP inicia deshabilitado y sus permisos
 // quedan denegados globalmente. Un proyecto puede habilitar un MCP (enabled: true)
-// con permisos ask únicamente si opencode.json declara una marca explícita en el
-// bloque top-level "mcpExceptions", con justificación no vacía por nombre de MCP:
-//   "mcpExceptions": { "context7": "Autorizado por el usuario: ..." }
+// con permisos ask únicamente si .opencode/policy/mcp-exceptions.json declara una
+// marca explícita con justificación no vacía por nombre de MCP:
+//   { "context7": "Autorizado por el usuario: ..." }
+// opencode no lee ese archivo: opencode.json no admite claves custom (el schema
+// estricto rechaza "mcpExceptions"), por lo que la marca es política del validador.
 // Sin esa marca el validador conserva el default estricto. "personal" no admite
 // excepción. Las excepciones no relajan el resto de invariantes de seguridad.
-const mcpExceptions = config.mcpExceptions ?? {};
+const mcpPolicyPath = ".opencode/policy/mcp-exceptions.json";
+if (Object.prototype.hasOwnProperty.call(config, "mcpExceptions")) {
+  fail("opencode.json: no debe declarar la clave custom mcpExceptions; la marca vive en .opencode/policy/mcp-exceptions.json");
+}
+let mcpExceptions = {};
+if (!exists(mcpPolicyPath)) {
+  fail(`${mcpPolicyPath}: archivo de política MCP requerido`);
+} else {
+  try {
+    const parsed = JSON.parse(read(mcpPolicyPath));
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+      fail(`${mcpPolicyPath}: debe ser un objeto con justificaciones por MCP`);
+    } else {
+      mcpExceptions = parsed;
+    }
+  } catch (error) {
+    fail(`${mcpPolicyPath}: JSON inválido (${error.message})`);
+  }
+}
 const exceptionCache = new Map();
 function mcpException(name) {
   if (exceptionCache.has(name)) return exceptionCache.get(name);
@@ -159,7 +179,7 @@ function mcpException(name) {
   if (raw === undefined) {
     value = undefined;
   } else if (typeof raw !== "string" || raw.trim() === "") {
-    fail(`opencode.json: mcpExceptions.${name} debe contener una justificación no vacía`);
+    fail(`${mcpPolicyPath}: ${name} debe contener una justificación no vacía`);
     value = undefined;
   } else {
     value = raw.trim();
@@ -176,16 +196,17 @@ for (const [name, mcp] of Object.entries(config.mcp ?? {})) {
     fail(`opencode.json: MCP ${name} debe declarar enabled como booleano`);
   }
   if (mcp.enabled === true && !mcpException(name)) {
-    fail(`opencode.json: MCP ${name} debe iniciar deshabilitado o declarar excepción en mcpExceptions`);
+    fail(`opencode.json: MCP ${name} debe iniciar deshabilitado o declarar excepción en ${mcpPolicyPath}`);
   }
 }
 for (const name of Object.keys(mcpExceptions)) {
+  if (name.startsWith("_")) continue; // metadatos (p. ej. _comment), no MCP
   if (name === "personal") {
-    fail("opencode.json: personal no admite excepción; debe permanecer disabled/deny");
+    fail(`${mcpPolicyPath}: personal no admite excepción; debe permanecer disabled/deny`);
     continue;
   }
   if (!config.mcp?.[name]) {
-    fail(`opencode.json: excepción declarada para MCP inexistente ${name}`);
+    fail(`${mcpPolicyPath}: excepción declarada para MCP inexistente ${name}`);
     continue;
   }
   // Toda excepción autoriza un MCP; sus tools deben quedar en ask, nunca allow.
