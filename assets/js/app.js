@@ -153,7 +153,8 @@ function showEventList() {
   dynamic.classList.remove('hidden');
 
   if (!eventsData || eventsData.length === 0) {
-    dynamic.innerHTML = '<div class="empty-state"><p>No hay eventos disponibles.</p>' +
+    dynamic.innerHTML = '<div class="empty-state"><h3>Sin eventos disponibles</h3>' +
+      '<p>No hay eventos disponibles.</p>' +
       '<div class="back-link"><a href="#/inicio">← Volver al inicio</a></div></div>';
     return;
   }
@@ -163,7 +164,8 @@ function showEventList() {
     .sort(function (a, b) { return a.date.localeCompare(b.date); });
 
   if (published.length === 0) {
-    dynamic.innerHTML = '<div class="empty-state"><p>No hay eventos publicados próximamente.</p>' +
+    dynamic.innerHTML = '<div class="empty-state"><h3>Sin eventos publicados</h3>' +
+      '<p>No hay eventos publicados próximamente.</p>' +
       '<div class="back-link"><a href="#/inicio">← Volver al inicio</a></div></div>';
     return;
   }
@@ -189,6 +191,7 @@ function showEventDetail(id) {
       <section class="section">\
         <div class="event-detail">\
           <div class="empty-state">\
+            <h3>Evento no encontrado</h3>\
             <p>Este evento no está disponible.</p>\
             <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
           </div>\
@@ -284,7 +287,12 @@ function eventCardHTML(event) {
         <div class="event-info">\
           <span class="event-type">' + escapeHTML(event.type) + '</span>\
           <h3>' + escapeHTML(event.title) + '</h3>\
-          <p class="event-meta">🕐 ' + escapeHTML(event.time) + ' · 📍 ' + escapeHTML(event.place) + '</p>\
+          <p class="event-meta">\
+            <svg class="event-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>\
+            <span>' + escapeHTML(event.time) + '</span>\
+            <svg class="event-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>\
+            <span>' + escapeHTML(event.place) + '</span>\
+          </p>\
         </div>\
       </article>\
     </a>';
@@ -318,7 +326,9 @@ function showEventsError() {
     container.innerHTML = '';
   }
   if (empty) {
-    empty.textContent = 'No se pudieron cargar los eventos. Verifica los archivos de datos.';
+    empty.innerHTML = '<h3>No se pudieron cargar los eventos</h3>' +
+      '<p>No se pudieron cargar los eventos. Verifica los archivos de datos.</p>' +
+      '<div class="back-link"><a href="#/eventos">← Ver todos los eventos</a></div>';
     empty.classList.remove('hidden');
   }
 }
@@ -334,6 +344,7 @@ function showSongList() {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
+          <h3>No se pudieron cargar los cantos</h3>\
           <p>No se pudieron cargar los cantos. Verifica los archivos de datos.</p>\
           <div class="back-link"><a href="#/inicio">← Volver al inicio</a></div>\
         </div>\
@@ -345,6 +356,7 @@ function showSongList() {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
+          <h3>Sin cantos disponibles</h3>\
           <p>No hay cantos disponibles por ahora.</p>\
           <div class="back-link"><a href="#/inicio">← Volver al inicio</a></div>\
         </div>\
@@ -408,7 +420,8 @@ function filterSongList(query) {
 
   if (results.length === 0) {
     container.innerHTML = '';
-    empty.innerHTML = '<p>No se encontraron cantos para “' + escapeHTML(query) + '”.</p>' +
+    empty.innerHTML = '<h3>Sin resultados</h3>' +
+      '<p>No se encontraron cantos para “' + escapeHTML(query) + '”.</p>' +
       '<button id="song-clear-search" class="btn btn-primary" type="button">Limpiar búsqueda</button>';
     empty.classList.remove('hidden');
     document.getElementById('song-clear-search').addEventListener('click', function () {
@@ -434,6 +447,7 @@ function showSongDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
+          <h3>No se pudieron cargar los cantos</h3>\
           <p>No se pudieron cargar los cantos. Verifica los archivos de datos.</p>\
           <div class="back-link"><a href="#/cantos">← Volver a cantos</a></div>\
         </div>\
@@ -447,6 +461,7 @@ function showSongDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
+          <h3>Canto no encontrado</h3>\
           <p>Este canto no está disponible.</p>\
           <div class="back-link"><a href="#/cantos">← Volver a cantos</a></div>\
         </div>\
@@ -500,6 +515,7 @@ function showRepertoireDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
+          <h3>No se pudieron cargar los repertorios</h3>\
           <p>No se pudieron cargar los repertorios. Verifica los archivos de datos.</p>\
           <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
         </div>\
@@ -513,6 +529,7 @@ function showRepertoireDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
+          <h3>Repertorio no encontrado</h3>\
           <p>Este repertorio no está disponible.</p>\
           <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
         </div>\
@@ -577,3 +594,45 @@ async function initApp() {
 
 document.addEventListener('DOMContentLoaded', initApp);
 window.addEventListener('hashchange', handleRoute);
+
+// --- Botón volver arriba ---
+const backToTop = document.getElementById('back-to-top');
+const SCROLL_THRESHOLD = 400;
+const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+let scrollTicking = false;
+
+function updateBackToTop() {
+  const show = window.scrollY > SCROLL_THRESHOLD;
+  if (show) {
+    if (backToTop.hidden) {
+      backToTop.hidden = false;
+      // Fuerza un reflow para que la transición de entrada se ejecute
+      void backToTop.offsetWidth;
+      backToTop.classList.add('visible');
+    }
+  } else if (backToTop.classList.contains('visible')) {
+    backToTop.classList.remove('visible');
+    backToTop.hidden = true;
+  }
+}
+
+function onScroll() {
+  if (scrollTicking) return;
+  scrollTicking = true;
+  window.requestAnimationFrame(function () {
+    updateBackToTop();
+    scrollTicking = false;
+  });
+}
+
+if (backToTop) {
+  backToTop.addEventListener('click', function () {
+    window.scrollTo({
+      top: 0,
+      behavior: reduceMotionQuery.matches ? 'instant' : 'smooth'
+    });
+  });
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  updateBackToTop();
+}
