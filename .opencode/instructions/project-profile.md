@@ -17,26 +17,36 @@ perfil aporta únicamente el contexto de dominio del producto.
 - Objetivo principal: plataforma pública de consulta de eventos, cantos y
   repertorios de un ministerio de música
 - Usuarios principales: miembros del ministerio, feligreses y público general
-- Estado: POC (Etapa 1 del plan; Fase 3 completada — ver "Estado del proyecto")
+- Estado: POC (Etapa 1 del plan; Fases 1-7 completadas + rediseño de identidad
+  visual — ver "Estado del proyecto")
 
 ## Estado del proyecto
 
 - Etapa actual: Etapa 1 — prueba de concepto estática (HTML/CSS/JS + JSON),
   según `docs/10-plan-implementacion.md`.
-- Fase 3 — Eventos: completada (lista de eventos, detalle `#/evento/:id`,
-  hash routing). Las vistas de landing (`#/inicio`, `#/nosotros`,
-  `#/organizacion`, `#/contacto`) funcionan; `#/cantos` sigue siendo
-  placeholder de landing hasta Fase 4. "Ver repertorio" es placeholder hasta
-  Fase 5.
-- Siguiente hito (solo si el usuario lo pide): Fase 4 — Cantos (biblioteca +
-  buscador + detalle de canto). Las Fases 4-10 están fuera de alcance.
+- Fases 1-7: completadas (esqueleto, landing, eventos, cantos, repertorios,
+  pulido UI/UX y QA) más un rediseño de identidad visual posterior. El sitio
+  expone landing por secciones (`#/inicio`, `#/nosotros`, `#/organizacion`,
+  `#/contacto`), lista de eventos (`#/eventos`), detalle de evento
+  (`#/evento/:id`), biblioteca de cantos (`#/cantos`), detalle de canto
+  (`#/canto/:id`) y repertorio (`#/repertorio/:id`), con hash routing.
+- El calendario mensual navegable es una sección de landing (`#/calendario`),
+  con navegación entre meses, marca de días con eventos y detalle accesible.
+- Fuera de alcance por ahora: Fases 8-10 del roadmap (despliegue, validación
+  con usuarios y ajustes posteriores). GitHub Pages permanece preparado y sin
+  publicar.
 - Deuda técnica conocida (backlog, no resolver sin autorización):
-  - Favicon: 404 en consola porque `index.html` no declara icono y el
-    navegador pide `/favicon.ico` en la raíz; los iconos reales viven en
-    `assets/img/` (`favicon.ico`, `favicon-512x512.png`).
-  - Contraste WCAG AA insuficiente: badge `.event-date` blanco/sage 2.53:1
-    (MEDIA) y texto hero blanco/sage 3.6:1 (BAJA), ambos en
-    `assets/css/styles.css`. Evidencia: `docs/reports/reporte-tecnico-final-fase3-eventos.md`.
+  - Resuelta en el rediseño: el favicon ya está declarado en `index.html`
+    (`assets/img/favicon.ico` + `apple-touch-icon`), por lo que el 404 en
+    consola quedó resuelto.
+  - Resuelta en el rediseño: los contrastes WCAG AA del backlog (badge
+    `.event-date` 2.53:1 y hero 3.6:1) fueron reemplazados por el nuevo sistema
+    de temas; el rediseño verifica AA en ambos temas (claro mínimo 4.83:1,
+    oscuro mínimo 7.66:1). Evidencia:
+    `docs/reports/reporte-tecnico-final-rediseno-identidad.md`.
+  - Deuda menor vigente: Google Fonts como dependencia externa en runtime (sin
+    self-hosting). Referencia del rediseño:
+    `docs/reports/reporte-tecnico-final-rediseno-identidad.md`.
 
 ## Stack
 
@@ -49,9 +59,14 @@ perfil aporta únicamente el contexto de dominio del producto.
   de verdad
 - Hosting / despliegue: estático. GitHub Pages preparado mediante workflow
   manual (`.github/workflows/pages.yml`), aún NO publicado
-- Herramientas de diseño o UI: CSS variables, diseño mobile-first, paleta
-  Sage + Durazno; Google Fonts DM Sans + Outfit cargadas por CDN desde
-  `index.html` (única dependencia externa en runtime)
+- Herramientas de diseño o UI: CSS variables, diseño mobile-first y sistema de
+  tema claro/oscuro con tokens `:root[data-theme]` y toggle en el header
+  persistido en `localStorage` (`mr-theme`), con respeto por
+  `prefers-color-scheme`. Paleta clara beige/crema (base `#F7F1E6`), terracota
+  y oliva; paleta oscura navy (`#050B20`), cian (`#7FD8E8`) y dorado
+  (`#E8C07A`). Tipografías Fraunces (títulos) + Karla (cuerpo), cargadas por
+  Google Fonts desde `index.html` (única dependencia externa en runtime; antes
+  DM Sans + Outfit)
 - Librerías críticas y versiones: 0 dependencias npm en el producto
 
 ## Comandos
@@ -88,6 +103,7 @@ ministerio-renacer/            # raíz del repo = producto + línea base
 ├── docs/                      # documentación absorbida (00-10 + reports/)
 ├── .opencode/                 # infraestructura OpenCode base (no es producto)
 ├── .agents/skills/            # skills externas auditadas (no es producto)
+├── prototypes/                # exploración visual de diseño (gitignored; no es producto)
 ├── Proyecto Actual/           # respaldo local del proyecto previo; gitignored
 └── scripts/                   # validación estructural de la línea base
 ```
@@ -118,7 +134,7 @@ ministerio-renacer/            # raíz del repo = producto + línea base
 - No usar: React, Angular, Vue, Next.js, Vite, Tailwind o Bootstrap
   obligatorios; tampoco backend, login, base de datos, Supabase, Firebase,
   PDF ni transposición de acordes (alcance POC).
-- No implementar ahora: Fases 4-10 del roadmap (`docs/10-plan-implementacion.md`);
+- No implementar ahora: Fases 8-10 del roadmap (`docs/10-plan-implementacion.md`);
   GitHub Pages permanece preparado y sin publicar.
 - No modificar: `ALMA.md` (prohibido por política), `opencode.json` raíz
   (decisión del usuario), código del producto (`index.html`, `assets/`,
@@ -138,15 +154,15 @@ ministerio-renacer/            # raíz del repo = producto + línea base
 
 ## Calidad esperada
 
-- Criterios de aceptación: sin errores de consola en flujo normal (backlog
-  conocido: favicon 404); navegación funcional entre todas las vistas;
-  mobile-first sin scroll horizontal; JSON válido con relaciones verificables
-  entre eventos, repertorios y cantos; estados vacíos y de error claros.
+- Criterios de aceptación: sin errores de consola en flujo normal; navegación
+  funcional entre todas las vistas; mobile-first sin scroll horizontal; JSON
+  válido con relaciones verificables entre eventos, repertorios y cantos;
+  estados vacíos y de error claros.
 - Navegadores/entornos objetivo: navegadores modernos (Chrome, Edge, Safari,
   Firefox); servidor local o hosting estático.
 - Requisitos de accesibilidad: HTML semántico, `alt` en imágenes, skip link,
-  foco visible, contraste suficiente (backlog: dos contrastes por debajo de
-  WCAG AA — ver "Estado del proyecto").
+  foco visible y contraste suficiente verificado en ambos temas (claro mínimo
+  4.83:1, oscuro mínimo 7.66:1).
 - Requisitos de seguridad: sin secretos ni credenciales en el repo; no
   incluir datos personales reales del ministerio; Gitleaks al estar
   disponible (ver `.opencode/docs/security-model.md`).

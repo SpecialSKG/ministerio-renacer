@@ -47,3 +47,6 @@ Proyecto Actual/
 
 # Prototipos de rediseño (no se versionan)
 prototypes/
+
+# Utilidad local de servidor (no se versiona)
+iniciar-servidor.bat
