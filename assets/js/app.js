@@ -1,7 +1,10 @@
 /**
  * Ministerio Renacer — App principal
- * Hash routing, carga de datos, renderizado de vistas
+ * Hash routing, carga de datos, renderizado de vistas,
+ * sistema de tema claro/oscuro y calendario navegable.
  */
+
+'use strict';
 
 // --- Configuración ---
 const DATA = {
@@ -14,6 +17,21 @@ const DATA = {
 let eventsData = null;
 let songsData = null;
 let repertoiresData = null;
+let eventsLoadError = false;
+
+// --- Tema ---
+const THEME_KEY = 'mr-theme';
+
+// --- Calendario ---
+const WEEKDAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+const MONTHS_SHORT = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
+const calendarState = {
+  viewYear: null,
+  viewMonth: null, // 0-11
+  selectedKey: null
+};
+const eventsByDate = new Map();
 
 // --- Utilidades ---
 async function loadJSON(url) {
@@ -36,6 +54,7 @@ function formatLabel(format) {
 
 function formatDate(dateStr) {
   const date = new Date(dateStr + 'T12:00:00');
+  if (Number.isNaN(date.getTime())) return dateStr;
   return date.toLocaleDateString('es', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
@@ -69,6 +88,25 @@ function categoryLabel(category) {
     otro: 'Otro'
   };
   return labels[category] || category;
+}
+
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
+function dateParts(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  if (Number.isNaN(d.getTime())) return null;
+  return { day: d.getDate(), mon: MONTHS_SHORT[d.getMonth()] };
+}
+
+function dateKey(y, m, d) {
+  return `${y}-${pad2(m + 1)}-${pad2(d)}`;
+}
+
+function todayKey() {
+  const now = new Date();
+  return dateKey(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
 // --- Router ---
@@ -139,10 +177,15 @@ function showLanding(sectionId) {
   landing.classList.remove('hidden');
   dynamic.classList.add('hidden');
 
-  // Scroll a la sección
+  // Scroll a la sección respetando prefers-reduced-motion
   setTimeout(function () {
     const target = document.getElementById(sectionId);
-    if (target) target.scrollIntoView({ behavior: 'smooth' });
+    if (target) {
+      target.scrollIntoView({
+        behavior: reduceMotionQuery.matches ? 'auto' : 'smooth',
+        block: 'start'
+      });
+    }
   }, 50);
 }
 
@@ -172,8 +215,8 @@ function showEventList() {
 
   dynamic.innerHTML = '\
     <section class="section">\
-      <h2 class="section-title">Todos los eventos</h2>\
-      <div class="events-grid">' + published.map(eventCardHTML).join('') + '</div>\
+      <div class="section-head"><h2 class="section-title">Todos los eventos</h2></div>\
+      <div class="events-list">' + published.map(eventCardHTML).join('') + '</div>\
       <div class="back-link"><a href="#/inicio">← Volver al inicio</a></div>\
     </section>';
 }
@@ -207,8 +250,11 @@ function showEventDetail(id) {
   dynamic.innerHTML = '\
     <section class="section">\
       <div class="event-detail">\
-        <span class="event-type-badge">' + escapeHTML(typeLabel(evt.type)) + '</span>\
-        <h2 class="section-title" style="margin-top:0.5rem">' + escapeHTML(evt.title) + '</h2>\
+        <header class="detail-head">\
+          <p class="section-eyebrow">Evento</p>\
+          <h2 class="section-title detail-title">' + escapeHTML(evt.title) + '</h2>\
+          <span class="event-type-badge">' + escapeHTML(typeLabel(evt.type)) + '</span>\
+        </header>\
         <div class="event-detail-grid">\
           <div class="detail-row">\
             <span class="detail-label">Fecha</span>\
@@ -226,7 +272,7 @@ function showEventDetail(id) {
           (evt.musicFormat ? '<div class="detail-row"><span class="detail-label">Formato musical</span><span class="detail-value">' + escapeHTML(formatLabel(evt.musicFormat)) + '</span></div>' : '') +
           dress.join('') + '\
         </div>' +
-        (evt.description ? '<div class="event-detail-block"><p>' + escapeHTML(evt.description) + '</p></div>' : '') +
+        (evt.description ? '<div class="event-detail-block"><h3 class="block-title">Descripción</h3><p>' + escapeHTML(evt.description) + '</p></div>' : '') +
         repertoireBlockHTML(evt) + '\
         <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
       </div>\
@@ -271,29 +317,39 @@ function repertoireItemsHTML(rep) {
   return '<ol class="repertoire-list">' + lis.join('') + '</ol>';
 }
 
-// --- Renderizado de cards (con link) ---
+// --- Renderizado de cards (fila: fecha + contenido + flecha) ---
 function eventCardHTML(event) {
-  var date = new Date(event.date + 'T' + (event.time || '00:00'));
-  var day = String(date.getDate()).padStart(2, '0');
-  var month = date.toLocaleDateString('es', { month: 'short' });
+  var parts = dateParts(event.date);
+  var day = parts ? parts.day : '—';
+  var mon = parts ? parts.mon : '';
+  var description = event.description
+    ? '<p>' + escapeHTML(event.description) + '</p>'
+    : '';
 
   return '\
     <a href="#/evento/' + escapeHTML(event.id) + '" class="event-card-link">\
       <article class="event-card">\
-        <div class="event-date">\
-          <span class="day">' + escapeHTML(day) + '</span>\
-          <span class="month">' + escapeHTML(month) + '</span>\
+        <span class="event-date" aria-hidden="true">\
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>\
+          <span class="d-num">' + escapeHTML(day) + '</span>\
+          <span class="d-mon">' + escapeHTML(mon) + '</span>\
+        </span>\
+        <div class="event-body">\
+          <p class="visually-hidden">' + escapeHTML(formatDate(event.date)) + '</p>\
+          <span class="event-type">' + escapeHTML(typeLabel(event.type)) + '</span>\
+          <h3>' + escapeHTML(event.title) + '</h3>' + description + '\
+          <div class="event-meta">\
+            <span>\
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>\
+              ' + escapeHTML(event.time) + ' hs\
+            </span>\
+            <span>\
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>\
+              ' + escapeHTML(event.place) + '\
+            </span>\
+          </div>\
         </div>\
-        <div class="event-info">\
-          <span class="event-type">' + escapeHTML(event.type) + '</span>\
-          <h3>' + escapeHTML(event.title) + '</h3>\
-          <p class="event-meta">\
-            <svg class="event-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>\
-            <span>' + escapeHTML(event.time) + '</span>\
-            <svg class="event-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>\
-            <span>' + escapeHTML(event.place) + '</span>\
-          </p>\
-        </div>\
+        <svg class="event-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>\
       </article>\
     </a>';
 }
@@ -304,6 +360,8 @@ function renderUpcomingEvents(events) {
   var empty = document.getElementById('events-empty');
   if (!container) return;
 
+  container.setAttribute('aria-busy', 'false');
+
   var upcoming = events
     .filter(function (e) { return e.status === 'published'; })
     .sort(function (a, b) { return a.date.localeCompare(b.date); })
@@ -311,7 +369,12 @@ function renderUpcomingEvents(events) {
 
   if (upcoming.length === 0) {
     container.innerHTML = '';
-    if (empty) empty.classList.remove('hidden');
+    if (empty) {
+      empty.innerHTML = '<h3>Sin eventos próximos</h3>' +
+        '<p>No hay eventos publicados por ahora.</p>' +
+        '<div class="back-link"><a href="#/eventos">← Ver todos los eventos</a></div>';
+      empty.classList.remove('hidden');
+    }
     return;
   }
 
@@ -324,6 +387,7 @@ function showEventsError() {
   var empty = document.getElementById('events-empty');
   if (container) {
     container.innerHTML = '';
+    container.setAttribute('aria-busy', 'false');
   }
   if (empty) {
     empty.innerHTML = '<h3>No se pudieron cargar los eventos</h3>' +
@@ -366,7 +430,7 @@ function showSongList() {
 
   dynamic.innerHTML = '\
     <section class="section">\
-      <h2 class="section-title">Biblioteca de cantos</h2>\
+      <div class="section-head"><h2 class="section-title">Biblioteca de cantos</h2></div>\
       <div class="song-search" role="search" aria-label="Buscar cantos">\
         <input id="song-search-input" type="search" placeholder="Buscar por título, categoría o etiqueta…" aria-label="Buscar cantos por título, categoría o etiqueta">\
       </div>\
@@ -482,8 +546,11 @@ function showSongDetail(id) {
   dynamic.innerHTML = '\
     <section class="section">\
       <div class="song-detail">\
-        <span class="event-type-badge">' + escapeHTML(categoryLabel(song.category)) + '</span>\
-        <h2 class="section-title" style="margin-top:0.5rem">' + escapeHTML(song.title) + '</h2>\
+        <header class="detail-head">\
+          <p class="section-eyebrow">Canto</p>\
+          <h2 class="section-title detail-title">' + escapeHTML(song.title) + '</h2>\
+          <span class="event-type-badge">' + escapeHTML(categoryLabel(song.category)) + '</span>\
+        </header>\
         <div class="song-detail-card">\
           <div class="detail-row">\
             <span class="detail-label">Tonalidad</span>\
@@ -547,11 +614,18 @@ function showRepertoireDetail(id) {
   var backHref = evt ? '#/evento/' + escapeHTML(evt.id) : '#/eventos';
   var backLabel = evt ? '← Volver al evento' : '← Volver a eventos';
 
+  var itemCount = (rep.items && rep.items.length) ? rep.items.length : 0;
+  var countLabel = itemCount === 1 ? '1 canto' : itemCount + ' cantos';
+
   dynamic.innerHTML = '\
     <section class="section">\
       <div class="song-detail">\
-        <h2 class="section-title">' + escapeHTML(rep.title) + '</h2>\
-        <div class="song-detail-card">' + eventLink + '</div>\
+        <header class="detail-head">\
+          <p class="section-eyebrow">Repertorio</p>\
+          <h2 class="section-title detail-title">' + escapeHTML(rep.title) + '</h2>\
+          <span class="event-type-badge">' + countLabel + '</span>\
+        </header>' +
+        (eventLink ? '<div class="song-detail-card">' + eventLink + '</div>' : '') + '\
         <div class="song-detail-card">\
           <h3 class="block-title">Cantos del repertorio</h3>' +
           repertoireItemsHTML(rep) + '\
@@ -559,6 +633,238 @@ function showRepertoireDetail(id) {
         <div class="back-link"><a href="' + backHref + '">' + backLabel + '</a></div>\
       </div>\
     </section>';
+}
+
+// ============================================================
+// Sistema de tema claro/oscuro
+// ============================================================
+function currentTheme() {
+  return document.documentElement.getAttribute('data-theme') || 'light';
+}
+
+function initThemeToggle() {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+
+  const sync = function () {
+    const dark = currentTheme() === 'dark';
+    btn.setAttribute('aria-pressed', String(dark));
+    btn.setAttribute('aria-label', dark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', dark ? '#050B20' : '#F7F1E6');
+  };
+
+  btn.addEventListener('click', function () {
+    const next = currentTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* almacenamiento no disponible */ }
+    sync();
+  });
+
+  sync();
+}
+
+// ============================================================
+// Navegación móvil
+// ============================================================
+function initNav() {
+  const toggle = document.getElementById('nav-toggle');
+  const header = document.querySelector('.site-header');
+  if (!toggle || !header) return;
+
+  toggle.addEventListener('click', function () {
+    const open = header.classList.toggle('nav-open');
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Cerrar menú de navegación' : 'Abrir menú de navegación');
+  });
+
+  header.querySelectorAll('.nav a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      header.classList.remove('nav-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menú de navegación');
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && header.classList.contains('nav-open')) {
+      header.classList.remove('nav-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.focus();
+    }
+  });
+}
+
+// ============================================================
+// Calendario navegable
+// ============================================================
+function buildEventsIndex() {
+  eventsByDate.clear();
+  var list = eventsData || [];
+  list.forEach(function (evt) {
+    if (evt && evt.date) {
+      if (!eventsByDate.has(evt.date)) eventsByDate.set(evt.date, []);
+      eventsByDate.get(evt.date).push(evt);
+    }
+  });
+}
+
+function eventsOnDate(key) {
+  return eventsByDate.get(key) || [];
+}
+
+function initCalendar() {
+  const now = new Date();
+  calendarState.viewYear = now.getFullYear();
+  calendarState.viewMonth = now.getMonth();
+  calendarState.selectedKey = null;
+
+  const prev = document.getElementById('cal-prev');
+  const next = document.getElementById('cal-next');
+  if (prev) prev.addEventListener('click', function () { shiftMonth(-1); });
+  if (next) next.addEventListener('click', function () { shiftMonth(1); });
+
+  renderCalendar();
+}
+
+function shiftMonth(delta) {
+  const d = new Date(calendarState.viewYear, calendarState.viewMonth + delta, 1);
+  calendarState.viewYear = d.getFullYear();
+  calendarState.viewMonth = d.getMonth();
+  calendarState.selectedKey = null;
+  renderCalendar();
+}
+
+function monthTitle() {
+  const d = new Date(calendarState.viewYear, calendarState.viewMonth, 1);
+  return d.toLocaleDateString('es', { month: 'long', year: 'numeric' });
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const title = document.getElementById('cal-title');
+  if (!grid) return;
+
+  title.textContent = monthTitle().replace(/^\w/, function (c) { return c.toUpperCase(); });
+
+  // El contenedor es un grupo accesible; su nombre describe el mes visible.
+  grid.setAttribute('aria-label', 'Calendario de ' + monthTitle());
+
+  const year = calendarState.viewYear;
+  const month = calendarState.viewMonth;
+  const firstDow = (new Date(year, month, 1).getDay() + 6) % 7; // lunes = 0
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const tKey = todayKey();
+
+  // Encabezados de día: decorativos en pantalla; cada día con evento
+  // expone su propio aria-label completo.
+  let html = WEEKDAYS.map(function (w) {
+    return '<span class="cal-dow" aria-hidden="true">' + w + '</span>';
+  }).join('');
+
+  for (let i = 0; i < firstDow; i++) {
+    html += '<span class="cal-blank" aria-hidden="true"></span>';
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const key = dateKey(year, month, day);
+    const dayEvents = eventsOnDate(key);
+    const has = dayEvents.length > 0;
+    const classes = ['cal-day'];
+    if (has) classes.push('has-events');
+    if (key === tKey) classes.push('is-today');
+    if (key === calendarState.selectedKey) classes.push('is-selected');
+
+    if (has) {
+      const label = day + ' de ' + monthTitle() + ' — ' + dayEvents.map(function (e) { return e.title; }).join(', ');
+      html += '<button type="button" class="' + classes.join(' ') + '" data-date="' + key + '" aria-label="' + escapeHTML(label) + '">' +
+        day + '<span class="dot" aria-hidden="true"></span></button>';
+    } else {
+      html += '<span class="' + classes.join(' ') + '" aria-hidden="true">' + day + '</span>';
+    }
+  }
+
+  grid.innerHTML = html;
+
+  grid.querySelectorAll('button.cal-day').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      calendarState.selectedKey = btn.dataset.date;
+      // renderCalendar() ya refresca el panel de detalle al final.
+      renderCalendar();
+    });
+  });
+
+  renderDetail();
+}
+
+function renderDetail() {
+  const detail = document.getElementById('cal-detail');
+  if (!detail) return;
+
+  if (eventsLoadError) {
+    detail.innerHTML = '<p class="detail-hint">No se pudieron cargar los eventos del calendario. Verificá los archivos de datos.</p>';
+    return;
+  }
+
+  const key = calendarState.selectedKey;
+
+  if (key) {
+    const evts = eventsOnDate(key);
+    const dayName = new Date(key + 'T12:00:00').toLocaleDateString('es', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+    detail.innerHTML = '\
+      <p class="section-eyebrow" style="margin-bottom:10px">' + escapeHTML(dayName) + '</p>\
+      <ul class="detail-list">' +
+        evts.map(function (e) {
+          return '\
+            <li class="detail-item">\
+              <strong>' + escapeHTML(e.title) + '</strong>\
+              <span class="event-type">' + escapeHTML(typeLabel(e.type)) + '</span>\
+              <div class="detail-meta">\
+                <span>\
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>\
+                  ' + escapeHTML(e.time) + ' hs\
+                </span>\
+                <span>\
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>\
+                  ' + escapeHTML(e.place) + '\
+                </span>\
+              </div>\
+            </li>';
+        }).join('') +
+      '</ul>';
+    return;
+  }
+
+  var monthEvents = [];
+  eventsByDate.forEach(function (list, k) {
+    if (k.startsWith(calendarState.viewYear + '-' + pad2(calendarState.viewMonth + 1))) {
+      monthEvents = monthEvents.concat(list);
+    }
+  });
+
+  if (monthEvents.length === 0) {
+    detail.innerHTML = '<p class="detail-hint">No hay eventos en ' + escapeHTML(monthTitle()) +
+      '. Navegá a otro mes para ver ensayos, eucaristías y talleres.</p>';
+    return;
+  }
+
+  monthEvents.sort(function (a, b) { return a.date.localeCompare(b.date); });
+  detail.innerHTML = '\
+    <p class="section-eyebrow" style="margin-bottom:10px">Eventos de ' + escapeHTML(monthTitle()) + '</p>\
+    <ul class="detail-list">' +
+      monthEvents.map(function (e) {
+        return '\
+          <li class="detail-item">\
+            <strong>' + escapeHTML(formatDate(e.date)) + ' · ' + escapeHTML(e.title) + '</strong>\
+            <div class="detail-meta">\
+              <span>' + escapeHTML(e.time) + ' hs</span>\
+              <span>' + escapeHTML(e.place) + '</span>\
+            </div>\
+          </li>';
+      }).join('') +
+    '</ul>';
 }
 
 // --- Init ---
@@ -571,8 +877,10 @@ async function initApp() {
 
   if (results[0].status === 'fulfilled') {
     eventsData = results[0].value;
+    eventsLoadError = false;
     renderUpcomingEvents(eventsData);
   } else {
+    eventsLoadError = true;
     console.error('Error al cargar eventos:', results[0].reason.message);
     showEventsError();
   }
@@ -589,10 +897,16 @@ async function initApp() {
     console.error('Error al cargar repertorios:', results[2].reason.message);
   }
 
+  buildEventsIndex();
+  initCalendar();
   handleRoute();
 }
 
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', function () {
+  initThemeToggle();
+  initNav();
+  initApp();
+});
 window.addEventListener('hashchange', handleRoute);
 
 // --- Botón volver arriba ---
