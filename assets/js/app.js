@@ -215,8 +215,8 @@ function showEventList() {
 
   dynamic.innerHTML = '\
     <section class="section">\
-      <div class="section-head"><h2 class="section-title">Todos los eventos</h2></div>\
-      <div class="events-list">' + published.map(eventCardHTML).join('') + '</div>\
+      <div class="section-head"><h1 class="section-title">Todos los eventos</h1></div>\
+      <div class="events-list">' + published.map(function (e) { return eventCardHTML(e, 'h2'); }).join('') + '</div>\
       <div class="back-link"><a href="#/inicio">← Volver al inicio</a></div>\
     </section>';
 }
@@ -252,7 +252,7 @@ function showEventDetail(id) {
       <div class="event-detail">\
         <header class="detail-head">\
           <p class="section-eyebrow">Evento</p>\
-          <h2 class="section-title detail-title">' + escapeHTML(evt.title) + '</h2>\
+          <h1 class="section-title detail-title">' + escapeHTML(evt.title) + '</h1>\
           <span class="event-type-badge">' + escapeHTML(typeLabel(evt.type)) + '</span>\
         </header>\
         <div class="event-detail-grid">\
@@ -272,7 +272,7 @@ function showEventDetail(id) {
           (evt.musicFormat ? '<div class="detail-row"><span class="detail-label">Formato musical</span><span class="detail-value">' + escapeHTML(formatLabel(evt.musicFormat)) + '</span></div>' : '') +
           dress.join('') + '\
         </div>' +
-        (evt.description ? '<div class="event-detail-block"><h3 class="block-title">Descripción</h3><p>' + escapeHTML(evt.description) + '</p></div>' : '') +
+        (evt.description ? '<div class="event-detail-block"><h2 class="block-title">Descripción</h2><p>' + escapeHTML(evt.description) + '</p></div>' : '') +
         repertoireBlockHTML(evt) + '\
         <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
       </div>\
@@ -281,7 +281,7 @@ function showEventDetail(id) {
 
 // --- Repertorio: bloque dentro del detalle de evento ---
 function repertoireBlockHTML(evt) {
-  var heading = '<h3 class="block-title">Repertorio</h3>';
+  var heading = '<h2 class="block-title">Repertorio</h2>';
 
   if (!evt.repertoireId) {
     return '<div class="event-detail-block">' + heading +
@@ -318,7 +318,10 @@ function repertoireItemsHTML(rep) {
 }
 
 // --- Renderizado de cards (fila: fecha + contenido + flecha) ---
-function eventCardHTML(event) {
+function eventCardHTML(event, headingTag) {
+  // En la landing el título de sección es h2 y las cards son h3; en la lista
+  // dinámica la página es h1, así que las cards suben a h2 (sin saltos de nivel).
+  var titleTag = headingTag === 'h2' ? 'h2' : 'h3';
   var parts = dateParts(event.date);
   var day = parts ? parts.day : '—';
   var mon = parts ? parts.mon : '';
@@ -337,7 +340,7 @@ function eventCardHTML(event) {
         <div class="event-body">\
           <p class="visually-hidden">' + escapeHTML(formatDate(event.date)) + '</p>\
           <span class="event-type">' + escapeHTML(typeLabel(event.type)) + '</span>\
-          <h3>' + escapeHTML(event.title) + '</h3>' + description + '\
+          <' + titleTag + '>' + escapeHTML(event.title) + '</' + titleTag + '>' + description + '\
           <div class="event-meta">\
             <span>\
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>\
@@ -379,7 +382,7 @@ function renderUpcomingEvents(events) {
   }
 
   if (empty) empty.classList.add('hidden');
-  container.innerHTML = upcoming.map(eventCardHTML).join('');
+  container.innerHTML = upcoming.map(function (e) { return eventCardHTML(e); }).join('');
 }
 
 function showEventsError() {
@@ -430,7 +433,7 @@ function showSongList() {
 
   dynamic.innerHTML = '\
     <section class="section">\
-      <div class="section-head"><h2 class="section-title">Biblioteca de cantos</h2></div>\
+      <div class="section-head"><h1 class="section-title">Biblioteca de cantos</h1></div>\
       <div class="song-search" role="search" aria-label="Buscar cantos">\
         <input id="song-search-input" type="search" placeholder="Buscar por título, categoría o etiqueta…" aria-label="Buscar cantos por título, categoría o etiqueta">\
       </div>\
@@ -453,7 +456,7 @@ function songCardHTML(song) {
           <span class="song-category">' + escapeHTML(categoryLabel(song.category)) + '</span>\
           <span class="song-key">Tonalidad: ' + escapeHTML(song.key) + '</span>\
         </div>\
-        <h3>' + escapeHTML(song.title) + '</h3>\
+        <h2>' + escapeHTML(song.title) + '</h2>\
         <p class="song-card-chords">' + escapeHTML(song.chords) + '</p>\
       </article>\
     </a>';
@@ -534,13 +537,13 @@ function showSongDetail(id) {
   }
 
   var tagsHTML = (song.tags && song.tags.length > 0)
-    ? '<div class="song-detail-card"><h3 class="block-title">Etiquetas</h3><div class="song-tags">' +
+    ? '<div class="song-detail-card"><h2 class="block-title">Etiquetas</h2><div class="song-tags">' +
       song.tags.map(function (tag) { return '<span class="tag">' + escapeHTML(tag) + '</span>'; }).join('') +
       '</div></div>'
     : '';
 
   var notesHTML = song.notes
-    ? '<div class="song-detail-card"><h3 class="block-title">Notas</h3><p>' + escapeHTML(song.notes) + '</p></div>'
+    ? '<div class="song-detail-card"><h2 class="block-title">Notas</h2><p>' + escapeHTML(song.notes) + '</p></div>'
     : '';
 
   dynamic.innerHTML = '\
@@ -548,7 +551,7 @@ function showSongDetail(id) {
       <div class="song-detail">\
         <header class="detail-head">\
           <p class="section-eyebrow">Canto</p>\
-          <h2 class="section-title detail-title">' + escapeHTML(song.title) + '</h2>\
+          <h1 class="section-title detail-title">' + escapeHTML(song.title) + '</h1>\
           <span class="event-type-badge">' + escapeHTML(categoryLabel(song.category)) + '</span>\
         </header>\
         <div class="song-detail-card">\
@@ -562,7 +565,7 @@ function showSongDetail(id) {
           </div>\
         </div>\
         <div class="song-detail-card">\
-          <h3 class="block-title">Letra</h3>\
+          <h2 class="block-title">Letra</h2>\
           <p class="song-lyrics">' + escapeHTML(song.lyrics) + '</p>\
         </div>' +
         tagsHTML + notesHTML + '\
@@ -622,12 +625,12 @@ function showRepertoireDetail(id) {
       <div class="song-detail">\
         <header class="detail-head">\
           <p class="section-eyebrow">Repertorio</p>\
-          <h2 class="section-title detail-title">' + escapeHTML(rep.title) + '</h2>\
+          <h1 class="section-title detail-title">' + escapeHTML(rep.title) + '</h1>\
           <span class="event-type-badge">' + countLabel + '</span>\
         </header>' +
         (eventLink ? '<div class="song-detail-card">' + eventLink + '</div>' : '') + '\
         <div class="song-detail-card">\
-          <h3 class="block-title">Cantos del repertorio</h3>' +
+          <h2 class="block-title">Cantos del repertorio</h2>' +
           repertoireItemsHTML(rep) + '\
         </div>\
         <div class="back-link"><a href="' + backHref + '">' + backLabel + '</a></div>\

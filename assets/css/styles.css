@@ -5,6 +5,62 @@
    Portado de prototypes/template7 a la arquitectura del producto.
    ============================================================ */
 
+/* ---------- Tipografías locales (self-hosting · licencia OFL) ----------
+   Fraunces (display) y Karla (cuerpo) se sirven desde assets/fonts/ para
+   eliminar la dependencia externa de Google Fonts en runtime. Son los woff2
+   variables oficiales; solo subsets latin y latin-ext (suficiente para
+   español). Los fallbacks (Georgia / system-ui) viven en los tokens de abajo.
+   Fraunces conserva su eje óptico opsz 9..144 (font-optical-sizing: auto es
+   el comportamiento por defecto del navegador). */
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/fraunces-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/fraunces-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/fraunces-italic-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("../fonts/fraunces-italic-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Karla";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/karla-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Karla";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/karla-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 /* ---------- Tokens · Tema claro ---------- */
 :root {
   color-scheme: light;
@@ -116,7 +172,9 @@
   --grain-opacity: 0.5;
 }
 
-/* ---------- Tokens · Tema oscuro ---------- */
+/* ---------- Tokens · Tema oscuro (bloque canónico) ----------
+   Fuente única de la paleta oscura para el tema explícito. El fallback
+   prefers-color-scheme de más abajo debe permanecer en espejo con este bloque. */
 :root[data-theme="dark"] {
   color-scheme: dark;
 
@@ -220,10 +278,20 @@
 
 /* Fallback sin JS: respeta prefers-color-scheme cuando no hay data-theme.
    El script anti-flash de index.html siempre escribe data-theme, así que este
-   bloque solo actúa si JavaScript está desactivado. Su paleta duplica
-   intencionalmente la de [data-theme="dark"] porque CSS no permite reutilizar
-   un conjunto de custom properties dentro de un @media condicionado por
-   selector; al tocar los tokens oscuros, mantener ambos bloques en espejo. */
+   bloque solo actúa si JavaScript está desactivado.
+
+   MANTENER EN ESPEJO con :root[data-theme="dark"] (bloque canónico de arriba).
+   Por qué sigue duplicado en CSS plano (no es descuido):
+   - No existe @mixin/@extend en CSS nativo, así que no hay forma de "importar"
+     un conjunto de custom properties desde otro selector.
+   - Un @media no puede condicionar solo una rama de una lista de selectores,
+     y las dos condiciones son distintas: el tema explícito debe aplicar aunque
+     el SO esté en claro, mientras que el fallback debe aplicar solo si el SO
+     está en oscuro y no hay data-theme.
+   - Referenciar los tokens del bloque canónico desde aquí no sirve: si el
+     selector no los declara, no existen en este contexto.
+   Alternativas fuera del alcance POC: preprocesador con mixin o construir los
+   tokens desde un mapa en JS. Al tocar la paleta oscura, editar AMBOS bloques. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
@@ -671,6 +739,9 @@ em { font-style: italic; }
   border-radius: 2px;
 }
 
+/* Tipografía y tamaño se definen por clase, no por etiqueta: el h1 de cada
+   vista dinámica (antes h2) conserva exactamente la misma apariencia.
+   Evitar reglas por etiqueta (p. ej. h1 { ... }) que rompan esa paridad. */
 .section-title {
   font-family: var(--font-display);
   font-weight: 500;
@@ -916,6 +987,7 @@ em { font-style: italic; }
   transition: background-color var(--theme-ease), border-color var(--theme-ease), color var(--theme-ease);
 }
 
+.event-card h2,
 .event-card h3 {
   font-family: var(--font-display);
   font-weight: 600;
@@ -1422,7 +1494,7 @@ button.cal-day.is-selected:hover {
   font-weight: 700;
 }
 
-.song-card h3 {
+.song-card h2 {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 1.25rem;
@@ -1612,4 +1684,7 @@ button.cal-day.is-selected:hover {
   .song-card-link:hover .song-card,
   .org-card:hover { transform: none; }
   .back-to-top { transform: none; }
+  /* Anula el :active (mayor especificidad) para que tampoco escale con
+     movimiento reducido. */
+  .back-to-top:active { transform: none; }
 }
