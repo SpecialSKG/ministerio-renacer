@@ -44,8 +44,14 @@ perfil aporta únicamente el contexto de dominio del producto.
     de temas; el rediseño verifica AA en ambos temas (claro mínimo 4.83:1,
     oscuro mínimo 7.66:1). Evidencia:
     `docs/reports/reporte-tecnico-final-rediseno-identidad.md`.
-  - Deuda menor vigente: Google Fonts como dependencia externa en runtime (sin
-    self-hosting). Referencia del rediseño:
+  - Resuelta tras el rediseño: las tipografías Fraunces + Karla se sirven
+    localmente desde `assets/fonts/` (6 `.woff2` + `OFL.txt`, licencia SIL OFL
+    1.1) con `@font-face` en `assets/css/styles.css`; sin dependencia externa de
+    fuentes en runtime. Referencia:
+    `docs/reports/reporte-tecnico-final-rediseno-identidad.md`.
+  - Deuda menor vigente: los estados vacíos/error de las vistas dinámicas usan
+    `<h3>` en lugar de `<h1>` (preexistente; cada vista ya declara su `<h1>` de
+    contenido). Referencia:
     `docs/reports/reporte-tecnico-final-rediseno-identidad.md`.
 
 ## Stack
@@ -64,9 +70,10 @@ perfil aporta únicamente el contexto de dominio del producto.
   persistido en `localStorage` (`mr-theme`), con respeto por
   `prefers-color-scheme`. Paleta clara beige/crema (base `#F7F1E6`), terracota
   y oliva; paleta oscura navy (`#050B20`), cian (`#7FD8E8`) y dorado
-  (`#E8C07A`). Tipografías Fraunces (títulos) + Karla (cuerpo), cargadas por
-  Google Fonts desde `index.html` (única dependencia externa en runtime; antes
-  DM Sans + Outfit)
+  (`#E8C07A`). Tipografías Fraunces (títulos) + Karla (cuerpo) self-hosted desde
+  `assets/fonts/` (6 `.woff2` + `OFL.txt`, licencia SIL OFL 1.1) vía `@font-face`
+  en `assets/css/styles.css`; sin dependencias externas en runtime (antes DM Sans
+  + Outfit)
 - Librerías críticas y versiones: 0 dependencias npm en el producto
 
 ## Comandos

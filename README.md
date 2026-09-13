@@ -15,15 +15,22 @@ Ministerio Renacer es una prueba de concepto para validar la utilidad de una
 plataforma pública antes de decidir una versión moderna. Los miembros del
 ministerio, feligreses y público general pueden consultar:
 
-- **Landing pública** con presentación, organización y próximos eventos.
+- **Landing pública** con presentación, organización, contacto y calendario
+  mensual navegable (`#/inicio`, `#/nosotros`, `#/organizacion`, `#/contacto`,
+  `#/calendario`).
 - **Eventos** (`#/eventos`): lista desde `data/events.json`, ordenada por
   fecha, con detalle por evento (`#/evento/:id`).
-- **Cantos** (`#/cantos`): placeholder de landing hasta la Fase 4 del roadmap.
+- **Cantos** (`#/cantos`): biblioteca desde `data/songs.json`, con detalle por
+  canto (`#/canto/:id`).
+- **Repertorios** (`#/repertorio/:id`): desde `data/repertoires.json`, con
+  referencia a los cantos que los componen.
 
 El estado del proyecto y su roadmap por fases están en
-[`docs/10-plan-implementacion.md`](docs/10-plan-implementacion.md). La Fase 3
-(Eventos + hash routing) está completada; el siguiente hito sería la Fase 4
-(Cantos), fuera de alcance hasta que el usuario lo pida.
+[`docs/10-plan-implementacion.md`](docs/10-plan-implementacion.md). Las Fases
+1-7 están completas (esqueleto, landing, eventos, cantos, repertorios, pulido
+UI/UX y QA), más un rediseño posterior de identidad visual. Las Fases 8-10
+(despliegue, validación y ajustes) quedan fuera de alcance hasta que el usuario
+lo pida.
 
 ## Stack
 
@@ -32,8 +39,12 @@ El estado del proyecto y su roadmap por fases están en
 - **Datos:** `data/*.json` como fuente única de verdad
   (`events.json`, `songs.json`, `repertoires.json`; relación:
   `events.repertoireId` → `repertoires.id` → `songs.songId`).
-- **Diseño:** CSS variables, mobile-first, paleta Sage + Durazno; Google Fonts
-  DM Sans + Outfit por CDN (única dependencia externa en runtime).
+- **Diseño:** CSS variables, mobile-first y sistema de tema claro/oscuro con
+  toggle persistido (`localStorage`, clave `mr-theme`) y respeto por
+  `prefers-color-scheme`. Paleta clara beige/crema `#F7F1E6` (terracota y oliva)
+  y oscura navy `#050B20` (cian `#7FD8E8` y dorado `#E8C07A`). Tipografías
+  Fraunces + Karla self-hosted desde `assets/fonts/` (licencia SIL OFL 1.1), sin
+  dependencias externas en runtime.
 - **Hosting / despliegue:** estático. GitHub Pages preparado, aún no publicado
   (ver [Despliegue](#despliegue-github-pages-preparado-no-publicado)).
 
@@ -56,6 +67,7 @@ ministerio-renacer/
 ├── assets/
 │   ├── css/styles.css         # todos los estilos
 │   ├── js/app.js              # rutas, fetch de JSON y render
+│   ├── fonts/                 # Fraunces + Karla self-hosted (6 woff2) y OFL.txt
 │   └── img/                   # LogoNuevoRenacer.png, favicon-512x512.png, favicon.ico
 ├── data/                      # fuente única de verdad del contenido (JSON)
 ├── docs/                      # documentación del producto (00-10 + reports/)

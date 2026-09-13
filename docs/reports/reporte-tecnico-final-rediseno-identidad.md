@@ -75,8 +75,13 @@ El tema se define con tokens CSS en `assets/css/styles.css`:
   énfasis, apoyada en su eje óptico (`opsz`) y en cursivas para palabras destacadas
   con degradado.
 - **Karla** (`--font-body`, con fallback system-ui / sans-serif) para cuerpo y UI.
-- Ambas se cargan por Google Fonts desde `index.html` (única dependencia externa en
-  runtime), con `preconnect` a `fonts.googleapis.com` y `fonts.gstatic.com`.
+- Ambas se sirven localmente desde `assets/fonts/` (self-hosting): seis archivos
+  `.woff2` declarados con `@font-face` en `assets/css/styles.css` (latin y
+  latin-ext de cada familia, más las itálicas de Fraunces), con
+  `font-display: swap`. La licencia SIL OFL 1.1 acompaña a los archivos en
+  `assets/fonts/OFL.txt`.
+- `index.html` ya no usa `preconnect` ni `<link>` a Google Fonts: el producto no
+  tiene dependencias externas en runtime.
 - Se retiraron las variables y referencias a DM Sans + Outfit.
 
 ## Componentes
@@ -155,8 +160,9 @@ contiene enlaces a prototipos; esto no afecta rutas, datos ni estilos activos.
 
 - Sin XSS: se preservó `escapeHTML` en la interpolación de datos.
 - `localStorage` validado (solo se aceptan `"dark"`/`"light"`; el resto cae a claro).
-- Sin dependencias nuevas ni secretos; la única dependencia externa sigue siendo
-  Google Fonts.
+- Sin dependencias nuevas ni secretos. La dependencia externa de Google Fonts
+  quedó eliminada después del rediseño: las tipografías se sirven localmente
+  desde `assets/fonts/` (self-hosting con licencia SIL OFL 1.1).
 - Validadores con exit 0 durante la auditoría.
 
 ### QA
@@ -194,14 +200,23 @@ contiene enlaces a prototipos; esto no afecta rutas, datos ni estilos activos.
 
 ## Deuda restante
 
+> **Resueltas desde la emisión original del reporte** (se conservan aquí para
+> trazabilidad):
+> - **Self-hosting de tipografías:** Fraunces y Karla se sirven desde
+>   `assets/fonts/` (6 `.woff2` + `OFL.txt`, licencia SIL OFL 1.1) y `index.html`
+>   ya no enlaza Google Fonts; sin dependencias externas de fuentes en runtime.
+>   Evidencia: `index.html`, `assets/css/styles.css`, `assets/fonts/`.
+> - **`<h1>` en vistas dinámicas:** `#/eventos`, `#/evento/:id`, `#/cantos`,
+>   `#/canto/:id` y `#/repertorio/:id` ya declaran su `<h1>` propio; la landing
+>   conserva el suyo en el hero. Evidencia: `assets/js/app.js`.
+
 | # | Descripción | Severidad | Fuente |
 |---|-------------|-----------|--------|
 | 1 | `:active` del botón flotante no anulado por reduced-motion (aceptado: feedback directo) | BAJA | `reporte-tecnico-final-fase6-pulido-ui-ux.md` |
 | 2 | Solapamiento potencial botón/footer en 320px (cosmético) | BAJA | `reporte-tecnico-final-fase6-pulido-ui-ux.md` |
 | 3 | `text-wrap` requiere navegadores modernos (degradación elegante) | BAJA | `reporte-tecnico-final-fase6-pulido-ui-ux.md` |
-| 4 | Google Fonts como dependencia externa en runtime (sin self-hosting) | BAJA | `index.html` |
-| 5 | Fases 8-10 del roadmap no ejecutadas (despliegue, validación con usuarios, ajustes) | — | [`../10-plan-implementacion.md`](../10-plan-implementacion.md) |
-| 6 | Vistas dinámicas (`#/eventos`, `#/cantos`, `#/evento/:id`, `#/canto/:id`, `#/repertorio/:id`) sin `<h1>`: el h1 vive en el hero de la landing y se oculta en rutas dinámicas; evaluar un h1 por vista o una estrategia de encabezados | BAJA (a11y/SEO) | `index.html`, `assets/js/app.js` |
+| 4 | Fases 8-10 del roadmap no ejecutadas (despliegue, validación con usuarios, ajustes) | — | [`../10-plan-implementacion.md`](../10-plan-implementacion.md) |
+| 5 | Estados vacíos/error de las vistas dinámicas usan `<h3>` en lugar de `<h1>` dentro de `#dynamic-view` (preexistente; cada vista ya declara su `<h1>` de contenido) | BAJA (a11y/SEO) | `assets/js/app.js` |
 
 ## Veredicto
 
