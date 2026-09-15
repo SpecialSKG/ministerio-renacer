@@ -26,11 +26,6 @@ const THEME_KEY = 'mr-theme';
 const WEEKDAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const MONTHS_SHORT = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
-const calendarState = {
-  viewYear: null,
-  viewMonth: null, // 0-11
-  selectedKey: null
-};
 const eventsByDate = new Map();
 
 // --- Utilidades ---
@@ -70,6 +65,21 @@ function escapeHTML(value) {
     .replace(/'/g, '&#39;');
 }
 
+// Envuelve la última palabra significativa (longitud >= 3, no numérica)
+// en <em class="grad">. El texto se escapa antes de ensamblar el HTML.
+function gradLastWord(text) {
+  var escaped = escapeHTML(text);
+  var words = escaped.split(' ');
+  for (var i = words.length - 1; i >= 0; i--) {
+    var word = words[i];
+    if (word.length >= 3 && !/^\d+$/.test(word)) {
+      words[i] = '<em class="grad">' + word + '</em>';
+      break;
+    }
+  }
+  return words.join(' ');
+}
+
 function normalizeText(value) {
   return String(value || '')
     .toLowerCase()
@@ -107,6 +117,25 @@ function dateKey(y, m, d) {
 function todayKey() {
   const now = new Date();
   return dateKey(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+// Eventos publicados ordenados por fecha (tie-break por id).
+// Fuente única para la landing, la lista y la navegación prev/next del detalle.
+function publishedEventsSorted(list) {
+  var source = list || eventsData || [];
+  return source
+    .filter(function (e) { return e.status === 'published'; })
+    .sort(function (a, b) {
+      var byDate = a.date.localeCompare(b.date);
+      return byDate !== 0 ? byDate : String(a.id).localeCompare(String(b.id));
+    });
+}
+
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: reduceMotionQuery.matches ? 'instant' : 'smooth'
+  });
 }
 
 // --- Router ---
@@ -194,6 +223,7 @@ function showEventList() {
   const dynamic = document.getElementById('dynamic-view');
   landing.classList.add('hidden');
   dynamic.classList.remove('hidden');
+  scrollToTop();
 
   if (!eventsData || eventsData.length === 0) {
     dynamic.innerHTML = '<div class="empty-state"><h3>Sin eventos disponibles</h3>' +
@@ -202,9 +232,7 @@ function showEventList() {
     return;
   }
 
-  const published = eventsData
-    .filter(function (e) { return e.status === 'published'; })
-    .sort(function (a, b) { return a.date.localeCompare(b.date); });
+  var published = publishedEventsSorted();
 
   if (published.length === 0) {
     dynamic.innerHTML = '<div class="empty-state"><h3>Sin eventos publicados</h3>' +
@@ -215,10 +243,17 @@ function showEventList() {
 
   dynamic.innerHTML = '\
     <section class="section">\
-      <div class="section-head"><h1 class="section-title">Todos los eventos</h1></div>\
+      <div class="section-head"><h1 class="section-title">Todos los <em class="grad">eventos</em></h1></div>\
+      <div class="events-calendar-block">\
+        <h2 class="block-title">Calendario</h2>\
+        <div class="calendar-card" data-cal-root></div>\
+      </div>\
       <div class="events-list">' + published.map(function (e) { return eventCardHTML(e, 'h2'); }).join('') + '</div>\
       <div class="back-link"><a href="#/inicio">← Volver al inicio</a></div>\
     </section>';
+
+  var calRoot = dynamic.querySelector('[data-cal-root]');
+  if (calRoot) createCalendar(calRoot, 'eventos');
 }
 
 function showEventDetail(id) {
@@ -226,6 +261,7 @@ function showEventDetail(id) {
   const dynamic = document.getElementById('dynamic-view');
   landing.classList.add('hidden');
   dynamic.classList.remove('hidden');
+  scrollToTop();
 
   var evt = eventsData ? eventsData.find(function (e) { return e.id === id; }) : null;
 
@@ -243,40 +279,72 @@ function showEventDetail(id) {
     return;
   }
 
+  // Navegación prev/next entre eventos publicados (ordenados por fecha).
+  var published = publishedEventsSorted();
+  var idx = published.findIndex(function (e) { return e.id === id; });
+  var prev = idx > 0 ? published[idx - 1] : null;
+  var next = (idx >= 0 && idx < published.length - 1) ? published[idx + 1] : null;
+
+  var navArrows = '';
+  if (prev) {
+    navArrows += '<a class="event-nav-arrow prev" href="#/evento/' + escapeHTML(prev.id) + '" aria-label="Evento anterior: ' + escapeHTML(prev.title) + '">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6"/></svg></a>';
+  }
+  if (next) {
+    navArrows += '<a class="event-nav-arrow next" href="#/evento/' + escapeHTML(next.id) + '" aria-label="Evento siguiente: ' + escapeHTML(next.title) + '">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6"/></svg></a>';
+  }
+
+  var navBar = '';
+  if (prev || next) {
+    navBar = '<nav class="event-nav-bar" aria-label="Navegación entre eventos">' +
+      (prev ? '<a class="event-nav-link" href="#/evento/' + escapeHTML(prev.id) + '">← Anterior</a>' : '') +
+      (next ? '<a class="event-nav-link" href="#/evento/' + escapeHTML(next.id) + '">Siguiente →</a>' : '') +
+      '</nav>';
+  }
+
   var dress = [];
   if (evt.dressCodeMen) dress.push('<div class="detail-row"><span class="detail-label">Vestimenta hombres</span><span class="detail-value">' + escapeHTML(evt.dressCodeMen) + '</span></div>');
   if (evt.dressCodeWomen) dress.push('<div class="detail-row"><span class="detail-label">Vestimenta mujeres</span><span class="detail-value">' + escapeHTML(evt.dressCodeWomen) + '</span></div>');
 
   dynamic.innerHTML = '\
     <section class="section">\
-      <div class="event-detail">\
-        <header class="detail-head">\
-          <p class="section-eyebrow">Evento</p>\
-          <h1 class="section-title detail-title">' + escapeHTML(evt.title) + '</h1>\
-          <span class="event-type-badge">' + escapeHTML(typeLabel(evt.type)) + '</span>\
-        </header>\
-        <div class="event-detail-grid">\
-          <div class="detail-row">\
-            <span class="detail-label">Fecha</span>\
-            <span class="detail-value">' + escapeHTML(formatDate(evt.date)) + '</span>\
-          </div>\
-          <div class="detail-row">\
-            <span class="detail-label">Hora</span>\
-            <span class="detail-value">' + escapeHTML(evt.time) + ' hs</span>\
+      <div class="event-detail-wrap">' +
+        navArrows + '\
+        <div class="event-detail">' +
+          navBar + '\
+          <header class="detail-head">\
+            <p class="section-eyebrow">Evento</p>\
+            <h1 class="section-title detail-title" tabindex="-1">' + gradLastWord(evt.title) + '</h1>\
+            <span class="event-type-badge">' + escapeHTML(typeLabel(evt.type)) + '</span>\
+          </header>\
+          <div class="event-detail-grid">\
+            <div class="detail-row">\
+              <span class="detail-label">Fecha</span>\
+              <span class="detail-value">' + escapeHTML(formatDate(evt.date)) + '</span>\
+            </div>\
+            <div class="detail-row">\
+              <span class="detail-label">Hora</span>\
+              <span class="detail-value">' + escapeHTML(evt.time) + ' hs</span>\
+            </div>' +
+            (evt.meetingTime ? '<div class="detail-row"><span class="detail-label">Hora de reunión</span><span class="detail-value">' + escapeHTML(evt.meetingTime) + ' hs</span></div>' : '') + '\
+            <div class="detail-row">\
+              <span class="detail-label">Lugar</span>\
+              <span class="detail-value">' + escapeHTML(evt.place) + '</span>\
+            </div>' +
+            (evt.musicFormat ? '<div class="detail-row"><span class="detail-label">Formato musical</span><span class="detail-value">' + escapeHTML(formatLabel(evt.musicFormat)) + '</span></div>' : '') +
+            dress.join('') + '\
           </div>' +
-          (evt.meetingTime ? '<div class="detail-row"><span class="detail-label">Hora de reunión</span><span class="detail-value">' + escapeHTML(evt.meetingTime) + ' hs</span></div>' : '') + '\
-          <div class="detail-row">\
-            <span class="detail-label">Lugar</span>\
-            <span class="detail-value">' + escapeHTML(evt.place) + '</span>\
-          </div>' +
-          (evt.musicFormat ? '<div class="detail-row"><span class="detail-label">Formato musical</span><span class="detail-value">' + escapeHTML(formatLabel(evt.musicFormat)) + '</span></div>' : '') +
-          dress.join('') + '\
-        </div>' +
-        (evt.description ? '<div class="event-detail-block"><h2 class="block-title">Descripción</h2><p>' + escapeHTML(evt.description) + '</p></div>' : '') +
-        repertoireBlockHTML(evt) + '\
-        <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
+          (evt.description ? '<div class="event-detail-block"><h2 class="block-title">Descripción</h2><p>' + escapeHTML(evt.description) + '</p></div>' : '') +
+          repertoireBlockHTML(evt) + '\
+          <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
+        </div>\
       </div>\
     </section>';
+
+  // Foco al título para anunciar el cambio de página (sin re-posicionar el scroll).
+  var titleEl = dynamic.querySelector('.detail-title');
+  if (titleEl) titleEl.focus({ preventScroll: true });
 }
 
 // --- Repertorio: bloque dentro del detalle de evento ---
@@ -319,6 +387,12 @@ function repertoireItemsHTML(rep) {
 
 // --- Renderizado de cards (fila: fecha + contenido + flecha) ---
 function eventCardHTML(event, headingTag) {
+  return '<a href="#/evento/' + escapeHTML(event.id) + '" class="event-card-link">' +
+    '<article class="event-card">' + eventCardInnerHTML(event, headingTag) + '</article></a>';
+}
+
+// Contenido interno de la card (compartido por la card completa y el teaser).
+function eventCardInnerHTML(event, headingTag) {
   // En la landing el título de sección es h2 y las cards son h3; en la lista
   // dinámica la página es h1, así que las cards suben a h2 (sin saltos de nivel).
   var titleTag = headingTag === 'h2' ? 'h2' : 'h3';
@@ -330,29 +404,40 @@ function eventCardHTML(event, headingTag) {
     : '';
 
   return '\
-    <a href="#/evento/' + escapeHTML(event.id) + '" class="event-card-link">\
-      <article class="event-card">\
-        <span class="event-date" aria-hidden="true">\
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>\
-          <span class="d-num">' + escapeHTML(day) + '</span>\
-          <span class="d-mon">' + escapeHTML(mon) + '</span>\
+    <span class="event-date" aria-hidden="true">\
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>\
+      <span class="d-num">' + escapeHTML(day) + '</span>\
+      <span class="d-mon">' + escapeHTML(mon) + '</span>\
+    </span>\
+    <div class="event-body">\
+      <p class="visually-hidden">' + escapeHTML(formatDate(event.date)) + '</p>\
+      <span class="event-type">' + escapeHTML(typeLabel(event.type)) + '</span>\
+      <' + titleTag + '>' + escapeHTML(event.title) + '</' + titleTag + '>' + description + '\
+      <div class="event-meta">\
+        <span>\
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>\
+          ' + escapeHTML(event.time) + ' hs\
         </span>\
-        <div class="event-body">\
-          <p class="visually-hidden">' + escapeHTML(formatDate(event.date)) + '</p>\
-          <span class="event-type">' + escapeHTML(typeLabel(event.type)) + '</span>\
-          <' + titleTag + '>' + escapeHTML(event.title) + '</' + titleTag + '>' + description + '\
-          <div class="event-meta">\
-            <span>\
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>\
-              ' + escapeHTML(event.time) + ' hs\
-            </span>\
-            <span>\
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>\
-              ' + escapeHTML(event.place) + '\
-            </span>\
-          </div>\
+        <span>\
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>\
+          ' + escapeHTML(event.place) + '\
+        </span>\
+      </div>\
+    </div>\
+    <svg class="event-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+}
+
+// Teaser de la landing: el 3er evento publicado se muestra difuminado con un
+// CTA "Más eventos" que lleva a la lista completa.
+function teaserCardHTML(event) {
+  return '\
+    <a class="event-card-link is-teaser" href="#/eventos" aria-label="Ver todos los eventos">\
+      <article class="event-card">\
+        <div class="teaser-blur" aria-hidden="true">' + eventCardInnerHTML(event) + '</div>\
+        <div class="teaser-overlay">\
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>\
+          <span>Más eventos</span>\
         </div>\
-        <svg class="event-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>\
       </article>\
     </a>';
 }
@@ -365,12 +450,9 @@ function renderUpcomingEvents(events) {
 
   container.setAttribute('aria-busy', 'false');
 
-  var upcoming = events
-    .filter(function (e) { return e.status === 'published'; })
-    .sort(function (a, b) { return a.date.localeCompare(b.date); })
-    .slice(0, 3);
+  var published = publishedEventsSorted(events);
 
-  if (upcoming.length === 0) {
+  if (published.length === 0) {
     container.innerHTML = '';
     if (empty) {
       empty.innerHTML = '<h3>Sin eventos próximos</h3>' +
@@ -382,7 +464,13 @@ function renderUpcomingEvents(events) {
   }
 
   if (empty) empty.classList.add('hidden');
-  container.innerHTML = upcoming.map(function (e) { return eventCardHTML(e); }).join('');
+
+  // Dos cards completas; con 3+ publicados, el tercero se muestra como teaser.
+  var html = published.slice(0, 2).map(function (e) { return eventCardHTML(e); }).join('');
+  if (published.length >= 3) {
+    html += teaserCardHTML(published[2]);
+  }
+  container.innerHTML = html;
 }
 
 function showEventsError() {
@@ -406,6 +494,7 @@ function showSongList() {
   const dynamic = document.getElementById('dynamic-view');
   landing.classList.add('hidden');
   dynamic.classList.remove('hidden');
+  scrollToTop();
 
   if (songsData === null) {
     dynamic.innerHTML = '\
@@ -433,7 +522,7 @@ function showSongList() {
 
   dynamic.innerHTML = '\
     <section class="section">\
-      <div class="section-head"><h1 class="section-title">Biblioteca de cantos</h1></div>\
+      <div class="section-head"><h1 class="section-title">Biblioteca de <em class="grad">cantos</em></h1></div>\
       <div class="song-search" role="search" aria-label="Buscar cantos">\
         <input id="song-search-input" type="search" placeholder="Buscar por título, categoría o etiqueta…" aria-label="Buscar cantos por título, categoría o etiqueta">\
       </div>\
@@ -509,6 +598,7 @@ function showSongDetail(id) {
   const dynamic = document.getElementById('dynamic-view');
   landing.classList.add('hidden');
   dynamic.classList.remove('hidden');
+  scrollToTop();
 
   if (songsData === null) {
     dynamic.innerHTML = '\
@@ -551,7 +641,7 @@ function showSongDetail(id) {
       <div class="song-detail">\
         <header class="detail-head">\
           <p class="section-eyebrow">Canto</p>\
-          <h1 class="section-title detail-title">' + escapeHTML(song.title) + '</h1>\
+          <h1 class="section-title detail-title" tabindex="-1">' + gradLastWord(song.title) + '</h1>\
           <span class="event-type-badge">' + escapeHTML(categoryLabel(song.category)) + '</span>\
         </header>\
         <div class="song-detail-card">\
@@ -572,6 +662,10 @@ function showSongDetail(id) {
         <div class="back-link"><a href="#/cantos">← Volver a cantos</a></div>\
       </div>\
     </section>';
+
+  // Foco al título para anunciar el cambio de página (sin re-posicionar el scroll).
+  var titleEl = dynamic.querySelector('.detail-title');
+  if (titleEl) titleEl.focus({ preventScroll: true });
 }
 
 // --- Repertorio: vista dedicada ---
@@ -580,6 +674,7 @@ function showRepertoireDetail(id) {
   const dynamic = document.getElementById('dynamic-view');
   landing.classList.add('hidden');
   dynamic.classList.remove('hidden');
+  scrollToTop();
 
   if (repertoiresData === null) {
     dynamic.innerHTML = '\
@@ -625,7 +720,7 @@ function showRepertoireDetail(id) {
       <div class="song-detail">\
         <header class="detail-head">\
           <p class="section-eyebrow">Repertorio</p>\
-          <h1 class="section-title detail-title">' + escapeHTML(rep.title) + '</h1>\
+          <h1 class="section-title detail-title" tabindex="-1">' + gradLastWord(rep.title) + '</h1>\
           <span class="event-type-badge">' + countLabel + '</span>\
         </header>' +
         (eventLink ? '<div class="song-detail-card">' + eventLink + '</div>' : '') + '\
@@ -636,6 +731,10 @@ function showRepertoireDetail(id) {
         <div class="back-link"><a href="' + backHref + '">' + backLabel + '</a></div>\
       </div>\
     </section>';
+
+  // Foco al título para anunciar el cambio de página (sin re-posicionar el scroll).
+  var titleEl = dynamic.querySelector('.detail-title');
+  if (titleEl) titleEl.focus({ preventScroll: true });
 }
 
 // ============================================================
@@ -699,7 +798,7 @@ function initNav() {
 }
 
 // ============================================================
-// Calendario navegable
+// Calendario navegable (componente reutilizable)
 // ============================================================
 function buildEventsIndex() {
   eventsByDate.clear();
@@ -716,158 +815,199 @@ function eventsOnDate(key) {
   return eventsByDate.get(key) || [];
 }
 
-function initCalendar() {
-  const now = new Date();
-  calendarState.viewYear = now.getFullYear();
-  calendarState.viewMonth = now.getMonth();
-  calendarState.selectedKey = null;
+// Crea una instancia independiente del calendario dentro de rootEl.
+// Sin IDs globales: usa data-* y queries acotadas al root para permitir
+// varias instancias (landing y #/eventos). El prefijo de instancia evita
+// ids duplicados en los tooltips (aria-describedby).
+function createCalendar(rootEl, instanceId) {
+  if (!rootEl) return null;
 
-  const prev = document.getElementById('cal-prev');
-  const next = document.getElementById('cal-next');
-  if (prev) prev.addEventListener('click', function () { shiftMonth(-1); });
-  if (next) next.addEventListener('click', function () { shiftMonth(1); });
+  var prefix = instanceId || 'cal';
+  var state = {
+    viewYear: null,
+    viewMonth: null, // 0-11
+    selectedKey: null
+  };
 
-  renderCalendar();
-}
+  var now = new Date();
+  state.viewYear = now.getFullYear();
+  state.viewMonth = now.getMonth();
+  state.selectedKey = null;
 
-function shiftMonth(delta) {
-  const d = new Date(calendarState.viewYear, calendarState.viewMonth + delta, 1);
-  calendarState.viewYear = d.getFullYear();
-  calendarState.viewMonth = d.getMonth();
-  calendarState.selectedKey = null;
-  renderCalendar();
-}
+  rootEl.innerHTML = '\
+    <div class="calendar-head">\
+      <button type="button" class="icon-btn" data-cal-prev aria-label="Mes anterior">\
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6"/></svg>\
+      </button>\
+      <p class="calendar-title" data-cal-title role="status" aria-live="polite">—</p>\
+      <button type="button" class="icon-btn" data-cal-next aria-label="Mes siguiente">\
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6"/></svg>\
+      </button>\
+    </div>\
+    <div class="calendar-grid" data-cal-grid role="group" aria-label="Calendario mensual"></div>\
+    <div class="calendar-detail" data-cal-detail aria-live="polite">\
+      <p class="detail-hint">Seleccioná un día con marca para ver su detalle.</p>\
+    </div>';
 
-function monthTitle() {
-  const d = new Date(calendarState.viewYear, calendarState.viewMonth, 1);
-  return d.toLocaleDateString('es', { month: 'long', year: 'numeric' });
-}
+  var grid = rootEl.querySelector('[data-cal-grid]');
+  var titleEl = rootEl.querySelector('[data-cal-title]');
+  var detail = rootEl.querySelector('[data-cal-detail]');
 
-function renderCalendar() {
-  const grid = document.getElementById('cal-grid');
-  const title = document.getElementById('cal-title');
-  if (!grid) return;
-
-  title.textContent = monthTitle().replace(/^\w/, function (c) { return c.toUpperCase(); });
-
-  // El contenedor es un grupo accesible; su nombre describe el mes visible.
-  grid.setAttribute('aria-label', 'Calendario de ' + monthTitle());
-
-  const year = calendarState.viewYear;
-  const month = calendarState.viewMonth;
-  const firstDow = (new Date(year, month, 1).getDay() + 6) % 7; // lunes = 0
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const tKey = todayKey();
-
-  // Encabezados de día: decorativos en pantalla; cada día con evento
-  // expone su propio aria-label completo.
-  let html = WEEKDAYS.map(function (w) {
-    return '<span class="cal-dow" aria-hidden="true">' + w + '</span>';
-  }).join('');
-
-  for (let i = 0; i < firstDow; i++) {
-    html += '<span class="cal-blank" aria-hidden="true"></span>';
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const key = dateKey(year, month, day);
-    const dayEvents = eventsOnDate(key);
-    const has = dayEvents.length > 0;
-    const classes = ['cal-day'];
-    if (has) classes.push('has-events');
-    if (key === tKey) classes.push('is-today');
-    if (key === calendarState.selectedKey) classes.push('is-selected');
-
-    if (has) {
-      const label = day + ' de ' + monthTitle() + ' — ' + dayEvents.map(function (e) { return e.title; }).join(', ');
-      html += '<button type="button" class="' + classes.join(' ') + '" data-date="' + key + '" aria-label="' + escapeHTML(label) + '">' +
-        day + '<span class="dot" aria-hidden="true"></span></button>';
-    } else {
-      html += '<span class="' + classes.join(' ') + '" aria-hidden="true">' + day + '</span>';
-    }
-  }
-
-  grid.innerHTML = html;
-
-  grid.querySelectorAll('button.cal-day').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      calendarState.selectedKey = btn.dataset.date;
-      // renderCalendar() ya refresca el panel de detalle al final.
+  // Delegación de eventos: prev/next y selección de día. Los links de los
+  // tooltips y del panel navegan por hash sin disparar la selección.
+  rootEl.addEventListener('click', function (e) {
+    if (e.target.closest('[data-cal-prev]')) { shiftMonth(-1); return; }
+    if (e.target.closest('[data-cal-next]')) { shiftMonth(1); return; }
+    var dayBtn = e.target.closest('button.cal-day');
+    if (dayBtn) {
+      state.selectedKey = dayBtn.dataset.date;
       renderCalendar();
-    });
+    }
   });
 
-  renderDetail();
-}
-
-function renderDetail() {
-  const detail = document.getElementById('cal-detail');
-  if (!detail) return;
-
-  if (eventsLoadError) {
-    detail.innerHTML = '<p class="detail-hint">No se pudieron cargar los eventos del calendario. Verificá los archivos de datos.</p>';
-    return;
+  function monthTitle() {
+    var d = new Date(state.viewYear, state.viewMonth, 1);
+    return d.toLocaleDateString('es', { month: 'long', year: 'numeric' });
   }
 
-  const key = calendarState.selectedKey;
+  function shiftMonth(delta) {
+    var d = new Date(state.viewYear, state.viewMonth + delta, 1);
+    state.viewYear = d.getFullYear();
+    state.viewMonth = d.getMonth();
+    state.selectedKey = null;
+    renderCalendar();
+  }
 
-  if (key) {
-    const evts = eventsOnDate(key);
-    const dayName = new Date(key + 'T12:00:00').toLocaleDateString('es', {
-      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  function renderCalendar() {
+    titleEl.textContent = monthTitle().replace(/^\w/, function (c) { return c.toUpperCase(); });
+
+    // El contenedor es un grupo accesible; su nombre describe el mes visible.
+    grid.setAttribute('aria-label', 'Calendario de ' + monthTitle());
+
+    var year = state.viewYear;
+    var month = state.viewMonth;
+    var firstDow = (new Date(year, month, 1).getDay() + 6) % 7; // lunes = 0
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var tKey = todayKey();
+
+    // Encabezados de día: decorativos en pantalla; cada día con evento
+    // expone su propio aria-label completo.
+    var html = WEEKDAYS.map(function (w) {
+      return '<span class="cal-dow" aria-hidden="true">' + w + '</span>';
+    }).join('');
+
+    for (var i = 0; i < firstDow; i++) {
+      html += '<span class="cal-blank" aria-hidden="true"></span>';
+    }
+
+    for (var day = 1; day <= daysInMonth; day++) {
+      var key = dateKey(year, month, day);
+      var dayEvents = eventsOnDate(key);
+      var has = dayEvents.length > 0;
+      var classes = ['cal-day'];
+      if (has) classes.push('has-events');
+      if (key === tKey) classes.push('is-today');
+      if (key === state.selectedKey) classes.push('is-selected');
+
+      if (has) {
+        var label = day + ' de ' + monthTitle() + ' — ' + dayEvents.map(function (e) { return e.title; }).join(', ');
+        var tipId = 'cal-tip-' + prefix + '-' + key;
+        var tipHTML = dayEvents.map(function (e) {
+          return '<div class="cal-tooltip-item">' +
+            '<span class="cal-tooltip-title">' + escapeHTML(e.title) + '</span>' +
+            '<a href="#/evento/' + escapeHTML(e.id) + '">Ver evento completo →</a>' +
+            '</div>';
+        }).join('');
+        // El tooltip es hermano del botón (no hijo) para evitar HTML inválido
+        // y clics conflictivos. Las celdas de borde alinean el tooltip para
+        // que no se recorte fuera de la card.
+        var col = (firstDow + day - 1) % 7;
+        var edgeClass = col === 0 ? ' is-edge-left' : (col === 6 ? ' is-edge-right' : '');
+        html += '<div class="cal-cell' + edgeClass + '">' +
+          '<button type="button" class="' + classes.join(' ') + '" data-date="' + key + '" aria-label="' + escapeHTML(label) + '" aria-describedby="' + tipId + '">' +
+          day + '<span class="dot" aria-hidden="true"></span></button>' +
+          '<div class="cal-tooltip" id="' + tipId + '">' + tipHTML + '</div>' +
+          '</div>';
+      } else {
+        html += '<span class="' + classes.join(' ') + '" aria-hidden="true">' + day + '</span>';
+      }
+    }
+
+    grid.innerHTML = html;
+    renderDetail();
+  }
+
+  function renderDetail() {
+    if (eventsLoadError) {
+      detail.innerHTML = '<p class="detail-hint">No se pudieron cargar los eventos del calendario. Verificá los archivos de datos.</p>';
+      return;
+    }
+
+    var key = state.selectedKey;
+
+    if (key) {
+      var evts = eventsOnDate(key);
+      var dayName = new Date(key + 'T12:00:00').toLocaleDateString('es', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+      });
+      detail.innerHTML = '\
+        <p class="section-eyebrow" style="margin-bottom:10px">' + escapeHTML(dayName) + '</p>\
+        <ul class="detail-list">' +
+          evts.map(function (e) {
+            return '\
+              <li class="detail-item">\
+                <strong>' + escapeHTML(e.title) + '</strong>\
+                <span class="event-type">' + escapeHTML(typeLabel(e.type)) + '</span>\
+                <div class="detail-meta">\
+                  <span>\
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>\
+                    ' + escapeHTML(e.time) + ' hs\
+                  </span>\
+                  <span>\
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>\
+                    ' + escapeHTML(e.place) + '\
+                  </span>\
+                </div>\
+                <a class="detail-link" href="#/evento/' + escapeHTML(e.id) + '">Ver evento completo →</a>\
+              </li>';
+          }).join('') +
+        '</ul>';
+      return;
+    }
+
+    var monthEvents = [];
+    eventsByDate.forEach(function (list, k) {
+      if (k.startsWith(state.viewYear + '-' + pad2(state.viewMonth + 1))) {
+        monthEvents = monthEvents.concat(list);
+      }
     });
+
+    if (monthEvents.length === 0) {
+      detail.innerHTML = '<p class="detail-hint">No hay eventos en ' + escapeHTML(monthTitle()) +
+        '. Navegá a otro mes para ver ensayos, eucaristías y talleres.</p>';
+      return;
+    }
+
+    monthEvents.sort(function (a, b) { return a.date.localeCompare(b.date); });
     detail.innerHTML = '\
-      <p class="section-eyebrow" style="margin-bottom:10px">' + escapeHTML(dayName) + '</p>\
+      <p class="section-eyebrow" style="margin-bottom:10px">Eventos de ' + escapeHTML(monthTitle()) + '</p>\
       <ul class="detail-list">' +
-        evts.map(function (e) {
+        monthEvents.map(function (e) {
           return '\
             <li class="detail-item">\
-              <strong>' + escapeHTML(e.title) + '</strong>\
-              <span class="event-type">' + escapeHTML(typeLabel(e.type)) + '</span>\
+              <strong>' + escapeHTML(formatDate(e.date)) + ' · ' + escapeHTML(e.title) + '</strong>\
               <div class="detail-meta">\
-                <span>\
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>\
-                  ' + escapeHTML(e.time) + ' hs\
-                </span>\
-                <span>\
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>\
-                  ' + escapeHTML(e.place) + '\
-                </span>\
+                <span>' + escapeHTML(e.time) + ' hs</span>\
+                <span>' + escapeHTML(e.place) + '</span>\
               </div>\
+              <a class="detail-link" href="#/evento/' + escapeHTML(e.id) + '">Ver evento completo →</a>\
             </li>';
         }).join('') +
       '</ul>';
-    return;
   }
 
-  var monthEvents = [];
-  eventsByDate.forEach(function (list, k) {
-    if (k.startsWith(calendarState.viewYear + '-' + pad2(calendarState.viewMonth + 1))) {
-      monthEvents = monthEvents.concat(list);
-    }
-  });
-
-  if (monthEvents.length === 0) {
-    detail.innerHTML = '<p class="detail-hint">No hay eventos en ' + escapeHTML(monthTitle()) +
-      '. Navegá a otro mes para ver ensayos, eucaristías y talleres.</p>';
-    return;
-  }
-
-  monthEvents.sort(function (a, b) { return a.date.localeCompare(b.date); });
-  detail.innerHTML = '\
-    <p class="section-eyebrow" style="margin-bottom:10px">Eventos de ' + escapeHTML(monthTitle()) + '</p>\
-    <ul class="detail-list">' +
-      monthEvents.map(function (e) {
-        return '\
-          <li class="detail-item">\
-            <strong>' + escapeHTML(formatDate(e.date)) + ' · ' + escapeHTML(e.title) + '</strong>\
-            <div class="detail-meta">\
-              <span>' + escapeHTML(e.time) + ' hs</span>\
-              <span>' + escapeHTML(e.place) + '</span>\
-            </div>\
-          </li>';
-      }).join('') +
-    '</ul>';
+  renderCalendar();
+  return rootEl;
 }
 
 // --- Init ---
@@ -901,7 +1041,7 @@ async function initApp() {
   }
 
   buildEventsIndex();
-  initCalendar();
+  createCalendar(document.getElementById('cal-root'), 'landing');
   handleRoute();
 }
 

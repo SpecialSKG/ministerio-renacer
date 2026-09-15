@@ -190,7 +190,10 @@
           </div>
           <div id="events-empty" class="empty-state hidden"></div>
           <div class="events-more">
-            <a class="btn btn-ghost" href="#/eventos">Ver todos los eventos</a>
+            <a class="btn btn-primary" href="#/eventos">
+              Ver todos los eventos
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
           </div>
         </div>
       </section>
@@ -204,23 +207,8 @@
             <p class="section-note">Navegá entre meses y tocá un día con marca para ver el detalle del evento.</p>
           </div>
 
-          <div class="calendar-card">
-            <div class="calendar-head">
-              <button type="button" class="icon-btn" id="cal-prev" aria-label="Mes anterior">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6"/></svg>
-              </button>
-              <p class="calendar-title" id="cal-title" role="status" aria-live="polite">—</p>
-              <button type="button" class="icon-btn" id="cal-next" aria-label="Mes siguiente">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6"/></svg>
-              </button>
-            </div>
-
-            <div class="calendar-grid" id="cal-grid" role="group" aria-label="Calendario mensual"></div>
-
-            <div class="calendar-detail" id="cal-detail" aria-live="polite">
-              <p class="detail-hint">Seleccioná un día con marca para ver su detalle.</p>
-            </div>
-          </div>
+          <!-- El calendario se construye por JS (componente reutilizable) -->
+          <div id="cal-root" class="calendar-card"></div>
         </div>
       </section>
 

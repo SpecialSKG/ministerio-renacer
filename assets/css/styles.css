@@ -1024,6 +1024,48 @@ em { font-style: italic; }
 }
 .event-card:hover .event-arrow { transform: translateX(4px); }
 
+/* ---- Teaser de la landing (3er evento difuminado + CTA) ---- */
+.event-card-link.is-teaser {
+  position: relative;
+  overflow: hidden;
+}
+.is-teaser .teaser-blur {
+  grid-column: 1 / -1;
+  /* Replica el layout de .event-card (fecha + contenido + flecha) para que el
+     teaser difuminado se vea como una card real, no como bloques apilados.
+     No se usa display: contents porque anularía filter/opacity. */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  filter: blur(6px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+.teaser-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+.teaser-overlay svg {
+  width: 24px;
+  height: 24px;
+  color: var(--terracotta-deep);
+  flex: none;
+}
+
 /* ---------- Calendario ---------- */
 .calendar-card {
   background: var(--cal-card-bg);
@@ -1182,6 +1224,70 @@ button.cal-day.is-selected:hover {
 .detail-meta span { display: inline-flex; align-items: center; gap: 7px; }
 .detail-meta svg { width: 15px; height: 15px; color: var(--meta-icon); flex: none; }
 
+/* Link "Ver evento completo" dentro del panel de detalle del calendario */
+.detail-link {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--terracotta-deep);
+  text-decoration: none;
+}
+.detail-link:hover { text-decoration: underline; }
+
+/* ---- Tooltip de días con evento ---- */
+.cal-cell {
+  position: relative;
+  display: flex;
+}
+.cal-cell > button.cal-day { flex: 1; width: 100%; }
+
+.cal-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(220px, 80vw);
+  z-index: 30;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lift);
+  padding: 10px 12px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 140ms var(--ease-out), visibility 140ms;
+  pointer-events: auto;
+}
+.cal-cell:hover .cal-tooltip,
+.cal-cell:focus-within .cal-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+/* Celdas de borde: alinean el tooltip para que no se recorte fuera de la card */
+.cal-cell.is-edge-left .cal-tooltip { left: 0; transform: none; }
+.cal-cell.is-edge-right .cal-tooltip { left: auto; right: 0; transform: none; }
+
+.cal-tooltip-item { display: flex; flex-direction: column; gap: 2px; }
+.cal-tooltip-item + .cal-tooltip-item {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+.cal-tooltip-title {
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+.cal-tooltip a {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--terracotta-deep);
+  text-decoration: none;
+}
+.cal-tooltip a:hover { text-decoration: underline; }
+
 /* ---------- Cantos (teaser landing) ---------- */
 .canto-teaser {
   text-align: center;
@@ -1310,8 +1416,8 @@ button.cal-day.is-selected:hover {
 
 #dynamic-view { min-height: 60vh; }
 
-/* Las vistas del router no usan .container: damos respiro lateral y ancho legible */
-#dynamic-view > .section { padding-inline: 22px; }
+/* Las vistas del router replican el ancho de .container para alinear títulos y contenido con la landing */
+#dynamic-view > .section { max-width: 1100px; margin: 0 auto; padding-inline: 22px; }
 #dynamic-view > .empty-state {
   max-width: min(720px, calc(100% - 44px));
   margin: 40px auto;
@@ -1349,6 +1455,66 @@ button.cal-day.is-selected:hover {
   max-width: 760px;
   margin: 0 auto;
 }
+
+/* Navegación prev/next del detalle de evento */
+.event-detail-wrap {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.event-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+  z-index: 5;
+  text-decoration: none;
+  transition: transform 120ms var(--ease-out), background-color var(--theme-ease), border-color var(--theme-ease), color var(--theme-ease);
+}
+.event-nav-arrow:hover { background: var(--terracotta-soft); border-color: var(--terracotta); color: var(--terracotta-deep); }
+.event-nav-arrow:active { transform: translateY(-50%) scale(0.92); }
+.event-nav-arrow svg { width: 22px; height: 22px; }
+.event-nav-arrow.prev { left: -64px; }
+.event-nav-arrow.next { right: -64px; }
+
+.event-nav-bar {
+  display: none;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.event-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--btn-ghost-line);
+  background: transparent;
+  color: var(--btn-ghost-ink);
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), color var(--theme-ease);
+}
+.event-nav-link:hover {
+  background: var(--btn-ghost-hover-bg);
+  border-color: var(--terracotta);
+  color: var(--terracotta-deep);
+}
+
+/* Bloque calendario en #/eventos (arriba de la lista) */
+.events-calendar-block { margin-bottom: 44px; }
+.events-calendar-block .block-title { margin-bottom: 16px; }
 
 .detail-head { margin-bottom: 26px; }
 .detail-head .section-eyebrow { margin-bottom: 12px; }
@@ -1607,6 +1773,14 @@ button.cal-day.is-selected:hover {
   .org-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* Navegación de evento: flechas laterales solo cuando hay espacio real
+   (columna 760px + flechas 48px a -64px necesitan >= 888px de viewport);
+   por debajo se usa la barra pager. */
+@media (max-width: 899px) {
+  .event-nav-arrow { display: none; }
+  .event-nav-bar { display: flex; }
+}
+
 @media (max-width: 760px) {
   .nosotros-grid { grid-template-columns: 1fr; }
   .nosotros-media { min-height: 300px; }
@@ -1637,11 +1811,13 @@ button.cal-day.is-selected:hover {
   .nav a { display: block; border-radius: 14px; padding: 14px 16px; }
 
   .event-card { grid-template-columns: auto minmax(0, 1fr); gap: 18px; }
+  .is-teaser .teaser-blur { grid-template-columns: auto minmax(0, 1fr); gap: 18px; }
   .event-arrow { display: none; }
 }
 
 @media (max-width: 480px) {
   .event-card { grid-template-columns: 1fr; gap: 12px; padding: 20px; }
+  .is-teaser .teaser-blur { grid-template-columns: 1fr; gap: 12px; }
   .event-date {
     flex-direction: row;
     align-items: center;
@@ -1687,4 +1863,5 @@ button.cal-day.is-selected:hover {
   /* Anula el :active (mayor especificidad) para que tampoco escale con
      movimiento reducido. */
   .back-to-top:active { transform: none; }
+  .event-nav-arrow:active { transform: translateY(-50%); }
 }
