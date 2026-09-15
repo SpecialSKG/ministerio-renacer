@@ -17,8 +17,9 @@ perfil aporta únicamente el contexto de dominio del producto.
 - Objetivo principal: plataforma pública de consulta de eventos, cantos y
   repertorios de un ministerio de música
 - Usuarios principales: miembros del ministerio, feligreses y público general
-- Estado: POC (Etapa 1 del plan; Fases 1-7 completadas + rediseño de identidad
-  visual — ver "Estado del proyecto")
+- Estado: POC publicada (Etapa 1 del plan; Fases 1-7 completadas + Fase 8 de
+  despliegue ejecutada + rediseño de identidad visual — ver "Estado del
+  proyecto")
 
 ## Estado del proyecto
 
@@ -32,9 +33,11 @@ perfil aporta únicamente el contexto de dominio del producto.
   (`#/canto/:id`) y repertorio (`#/repertorio/:id`), con hash routing.
 - El calendario mensual navegable es una sección de landing (`#/calendario`),
   con navegación entre meses, marca de días con eventos y detalle accesible.
-- Fuera de alcance por ahora: Fases 8-10 del roadmap (despliegue, validación
-  con usuarios y ajustes posteriores). GitHub Pages permanece preparado y sin
-  publicar.
+- Fase 8 — Despliegue: ejecutada. El sitio está publicado en GitHub Pages en
+  https://specialskg.github.io/ministerio-renacer/ mediante el workflow manual
+  `.github/workflows/pages.yml` (`workflow_dispatch`).
+- Fuera de alcance por ahora: Fases 9-10 del roadmap (validación con usuarios y
+  ajustes posteriores).
 - Deuda técnica conocida (backlog, no resolver sin autorización):
   - Resuelta en el rediseño: el favicon ya está declarado en `index.html`
     (`assets/img/favicon.ico` + `apple-touch-icon`), por lo que el 404 en
@@ -63,8 +66,10 @@ perfil aporta únicamente el contexto de dominio del producto.
   interno de `.opencode/` no cuenta como stack productivo)
 - Base de datos: ninguna; los datos viven en `data/*.json` como fuente única
   de verdad
-- Hosting / despliegue: estático. GitHub Pages preparado mediante workflow
-  manual (`.github/workflows/pages.yml`), aún NO publicado
+- Hosting / despliegue: estático, publicado en GitHub Pages —
+  https://specialskg.github.io/ministerio-renacer/ — mediante workflow manual
+  (`.github/workflows/pages.yml`, disparo `workflow_dispatch`; no se activa por
+  push ni schedule)
 - Herramientas de diseño o UI: CSS variables, diseño mobile-first y sistema de
   tema claro/oscuro con tokens `:root[data-theme]` y toggle en el header
   persistido en `localStorage` (`mr-theme`), con respeto por
@@ -89,7 +94,9 @@ perfil aporta únicamente el contexto de dominio del producto.
 - Build: no aplica (no hay build step)
 - Formateo: no aplica al producto
 - Despliegue: GitHub Actions manual — `.github/workflows/pages.yml`
-  (`workflow_dispatch`); no ejecutado, requiere decisión del usuario
+  (`workflow_dispatch`); ya ejecutado (sitio publicado en
+  https://specialskg.github.io/ministerio-renacer/); una nueva ejecución
+  requiere decisión del usuario
 - Validación de infraestructura OpenCode (tras cambios en `.opencode/` o
   perfiles): `node scripts/validate-template.mjs` y
   `node scripts/test-agent-fixtures.mjs`
@@ -141,16 +148,17 @@ ministerio-renacer/            # raíz del repo = producto + línea base
 - No usar: React, Angular, Vue, Next.js, Vite, Tailwind o Bootstrap
   obligatorios; tampoco backend, login, base de datos, Supabase, Firebase,
   PDF ni transposición de acordes (alcance POC).
-- No implementar ahora: Fases 8-10 del roadmap (`docs/10-plan-implementacion.md`);
-  GitHub Pages permanece preparado y sin publicar.
+- No implementar ahora: Fases 9-10 del roadmap (`docs/10-plan-implementacion.md`);
+  la Fase 8 (despliegue) ya se ejecutó y el sitio está publicado en
+  https://specialskg.github.io/ministerio-renacer/.
 - No modificar: `ALMA.md` (prohibido por política), `opencode.json` raíz
   (decisión del usuario), código del producto (`index.html`, `assets/`,
   `data/`) por agentes de documentación, ni `.github/workflows/pages.yml`.
 - No borrar: `Proyecto Actual/` (respaldo local no versionado).
 - Requiere aprobación antes de: instalar dependencias, cambios de
-  arquitectura, borrar archivos, activar/ejecutar el despliegue de Pages,
-  commit y push, o reabrir decisiones ya tomadas (git sobre línea base, sin
-  agentes de dominio).
+  arquitectura, borrar archivos, re-ejecutar el despliegue de Pages (el sitio
+  ya está publicado), commit y push, o reabrir decisiones ya tomadas (git
+  sobre línea base, sin agentes de dominio).
 - Convenciones de nombres: IDs técnicos en inglés simple (`evt-001`,
   `rep-001`, `songId`); fechas `YYYY-MM-DD`; horas `HH:mm`; contenido visible
   en español primero; JSON sin comas finales.
