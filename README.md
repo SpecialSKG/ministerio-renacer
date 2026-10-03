@@ -28,9 +28,9 @@ ministerio, feligreses y público general pueden consultar:
 El estado del proyecto y su roadmap por fases están en
 [`docs/10-plan-implementacion.md`](docs/10-plan-implementacion.md). Las Fases
 1-7 están completas (esqueleto, landing, eventos, cantos, repertorios, pulido
-UI/UX y QA), más un rediseño posterior de identidad visual. Las Fases 8-10
-(despliegue, validación y ajustes) quedan fuera de alcance hasta que el usuario
-lo pida.
+UI/UX y QA), más un rediseño posterior de identidad visual. La Fase 8
+(despliegue) ya se ejecutó y el sitio está publicado; las Fases 9-10
+(validación y ajustes) quedan fuera de alcance hasta que el usuario lo pida.
 
 ## Stack
 
@@ -45,8 +45,9 @@ lo pida.
   y oscura navy `#050B20` (cian `#7FD8E8` y dorado `#E8C07A`). Tipografías
   Fraunces + Karla self-hosted desde `assets/fonts/` (licencia SIL OFL 1.1), sin
   dependencias externas en runtime.
-- **Hosting / despliegue:** estático. GitHub Pages preparado, aún no publicado
-  (ver [Despliegue](#despliegue-github-pages-preparado-no-publicado)).
+- **Hosting / despliegue:** estático. Publicado en GitHub Pages en
+  https://specialskg.github.io/ministerio-renacer/ mediante workflow manual
+  (ver [Despliegue](#despliegue--github-pages-publicado)).
 
 ## Ejecutar localmente
 
@@ -91,14 +92,15 @@ La documentación absorbida del producto vive en [`docs/`](docs/README.md), con
 - Plan / roadmap: [`docs/10-plan-implementacion.md`](docs/10-plan-implementacion.md)
 - Reportes técnicos y de iteración: [`docs/reports/`](docs/reports/)
 
-## Despliegue — GitHub Pages (preparado, no publicado)
+## Despliegue — GitHub Pages (publicado)
 
-El despliegue está **preparado pero no activo**: existe el workflow
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml) con disparo
+El sitio está **publicado** en
+[https://specialskg.github.io/ministerio-renacer/](https://specialskg.github.io/ministerio-renacer/)
+mediante el workflow
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml), con disparo
 únicamente manual (`workflow_dispatch`); no se activa por push ni schedule.
-No se ha ejecutado.
 
-Para publicar cuando el usuario lo autorice:
+Para volver a publicar tras un cambio autorizado:
 
 1. **Ajustes del repositorio en GitHub:** Settings → Pages → Source =
    **GitHub Actions** (no "Deploy from a branch").
@@ -109,7 +111,7 @@ Para publicar cuando el usuario lo autorice:
 Nota: `Proyecto Actual/` es respaldo local del proyecto previo y está
 gitignored; nunca debe versionarse ni incluirse en el despliegue (el workflow
 publica la raíz, por lo que ese respaldo debe permanecer fuera del repo o
-excluirse explícitamente antes de activar Pages).
+excluirse explícitamente antes de ejecutar el workflow).
 
 ---
 

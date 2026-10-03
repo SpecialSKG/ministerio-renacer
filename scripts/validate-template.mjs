@@ -396,8 +396,8 @@ for (const file of skillFiles) {
 if (ownSkillFiles.length !== 9) {
   fail(`.opencode/skills: deben existir 9 skills propias; observadas ${ownSkillFiles.length}`);
 }
-if (externalSkillFiles.length !== 18) {
-  fail(`.agents/skills: deben existir 18 skills externas; observadas ${externalSkillFiles.length}`);
+if (externalSkillFiles.length !== 20) {
+  fail(`.agents/skills: deben existir 20 skills externas; observadas ${externalSkillFiles.length}`);
 }
 const frontendSkillRoot = ".opencode/skills/special-frontend-quality";
 const frontendSkillFiles = [

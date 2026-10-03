@@ -11,6 +11,11 @@ Todos los cambios relevantes de OpenCode Base se documentan aquí.
 - Las propuestas de ALMA y los reportes opt-in se generan bajo `.opencode/`
   para no mezclarse con documentación del producto.
 
+### Corregido
+
+- El bundle versionable `docs/agent-evolution/` citado en `[3.1.0]` no está
+  incluido en este snapshot; la entrada histórica se conserva sin reescribir.
+
 ## [3.1.0] - 2026-07-18
 
 ### Añadido

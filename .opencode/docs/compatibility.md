@@ -5,6 +5,7 @@
 | Componente | Versión fijada | Uso |
 |---|---:|---|
 | OpenCode (`opencode-ai`) | `1.17.20` | Smoke test bloqueante en CI |
+| `@opencode-ai/plugin` | `1.18.29` | Dependencia de plugin (`.opencode/package.json`) |
 | Node.js | `22` | Validador y CI |
 | Playwright MCP | `0.0.78` | MCP local opt-in |
 | Context7 MCP local | `3.2.3` | Ejemplo alternativo opt-in |
