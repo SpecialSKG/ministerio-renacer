@@ -209,6 +209,9 @@ contiene enlaces a prototipos; esto no afecta rutas, datos ni estilos activos.
 > - **`<h1>` en vistas dinámicas:** `#/eventos`, `#/evento/:id`, `#/cantos`,
 >   `#/canto/:id` y `#/repertorio/:id` ya declaran su `<h1>` propio; la landing
 >   conserva el suyo en el hero. Evidencia: `assets/js/app.js`.
+> - **Estados vacíos/error en `#dynamic-view`:** ya no usan `<h3>`; ahora usan
+>   `<h1>` y, cuando la vista ya declara su `<h1>` de contenido, `<h2>` (p. ej.
+>   "Sin resultados"). Resuelto en Fase 10. Evidencia: `assets/js/app.js`.
 
 | # | Descripción | Severidad | Fuente |
 |---|-------------|-----------|--------|
@@ -216,7 +219,6 @@ contiene enlaces a prototipos; esto no afecta rutas, datos ni estilos activos.
 | 2 | Solapamiento potencial botón/footer en 320px (cosmético) | BAJA | `reporte-tecnico-final-fase6-pulido-ui-ux.md` |
 | 3 | `text-wrap` requiere navegadores modernos (degradación elegante) | BAJA | `reporte-tecnico-final-fase6-pulido-ui-ux.md` |
 | 4 | Fases 8-10 del roadmap no ejecutadas (despliegue, validación con usuarios, ajustes) | — | [`../10-plan-implementacion.md`](../10-plan-implementacion.md) |
-| 5 | Estados vacíos/error de las vistas dinámicas usan `<h3>` en lugar de `<h1>` dentro de `#dynamic-view` (preexistente; cada vista ya declara su `<h1>` de contenido) | BAJA (a11y/SEO) | `assets/js/app.js` |
 
 ## Veredicto
 

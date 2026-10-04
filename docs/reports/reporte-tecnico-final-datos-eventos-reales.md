@@ -131,10 +131,15 @@ no se re-ejecutó desde esta sesión de documentación por falta de herramienta 
 
 ### Validadores
 
-- `node scripts/validate-template.mjs` — **exit 0** según el ciclo aprobado, con una
-  falla temporal esperada: la configuración de Playwright aún no incluye
-  `--headless`, por lo que el validador puede fallar hasta revertir ese estado
-  temporal. Es un pendiente de revertir y no un defecto de los datos.
+- `node scripts/validate-template.mjs` — **exit 0** según el ciclo aprobado. El
+  modo visible (headed) de Playwright dejó de ser un estado temporal: es ahora la
+  postura **permanente** por decisión explícita del usuario (commit `5be510c`).
+  `--headless` es opcional en el validador (el default del template sigue siendo
+  headless; el navegador visible está permitido por decisión explícita), y las
+  demás guardas de Playwright —`--isolated`, `--block-service-workers` y allowlist
+  `localhost`— permanecen obligatorias. Fuente de la postura documentada:
+  `.opencode/instructions/mcp-policy.md` y `.opencode/docs/security-model.md`
+  (secciones "Playwright" y "Excepción MCP").
 - `node scripts/test-agent-fixtures.mjs` — exit 0 según el ciclo aprobado.
 - **Nota de verificación:** esta sesión de documentación **no dispone de herramienta
   de shell**, por lo que no pudo re-ejecutar los validadores. Los enlaces internos de
@@ -145,10 +150,14 @@ no se re-ejecutó desde esta sesión de documentación por falta de herramienta 
 | # | Descripción | Severidad | Fuente |
 |---|-------------|-----------|--------|
 | 1 | `evt-004` incluye el título "Misa 40 días por mamá de Hno Sergio", con referencia a una persona real. Fue provisto y autorizado por el usuario; se marca como dato potencialmente sensible a reconsiderar antes de publicar de forma masiva o reutilizar. | BAJA (privacidad) | `data/events.json` |
-| 2 | Estados vacíos/error de las vistas dinámicas usan `<h3>` en lugar de `<h1>` dentro de `#dynamic-view` (preexistente; cada vista ya declara su `<h1>` de contenido). No introducido por este cambio. | BAJA (a11y/SEO) | `assets/js/app.js`, [`reporte-tecnico-final-rediseno-identidad.md`](reporte-tecnico-final-rediseno-identidad.md) |
+| 2 | **RESUELTA** (Fase 10): los estados vacíos/error de las vistas dinámicas dentro de `#dynamic-view` ya no usan `<h3>`; ahora usan `<h1>` y, cuando la vista ya declara su `<h1>` de contenido, `<h2>` (p. ej. "Sin resultados"). Evidencia: `assets/js/app.js` (cambio de Fase 10). | BAJA (a11y/SEO) | `assets/js/app.js`, [`reporte-tecnico-final-rediseno-identidad.md`](reporte-tecnico-final-rediseno-identidad.md) |
 | 3 | `evt-008` registra un único `time` (06:30); el segundo horario (10:30) vive en `description`, no como dato estructurado. Aceptado para POC; considerar múltiples horarios si el modelo evoluciona. | BAJA | `data/events.json` |
 | 4 | Los cantos de `data/songs.json` siguen siendo de ejemplo; solo los eventos pasaron a datos reales. | Informativa | `data/songs.json` |
-| 5 | Configuración temporal de Playwright sin `--headless` pendiente de revertir; el validador puede fallar hasta entonces. | BAJA | `.opencode/` (fuera del producto) |
+
+> **Nota (actualizada):** la antigua observación sobre Playwright sin `--headless`
+> como deuda "pendiente de revertir" quedó **resuelta**: el modo visible (headed)
+> es permanente por decisión del usuario (commit `5be510c`), con las guardas de
+> aislamiento y allowlist localhost conservadas. No es deuda vigente.
 
 ## Veredicto
 

@@ -23,28 +23,26 @@ sin necesidad de login. No se evalúa a las personas: se evalúa el sitio.
   con buscador, repertorios). Referencia del rediseño:
   [reports/reporte-tecnico-final-rediseno-identidad.md](reports/reporte-tecnico-final-rediseno-identidad.md).
 
-### ⚠️ Nota importante: los datos son ficticios
+### Datos reales (septiembre–octubre 2026)
 
-Los datos actuales en `data/*.json` son **ficticios y de ejemplo**:
+Los datos en `data/*.json` son **reales** y corresponden a septiembre y octubre
+de 2026. Fecha base de esta guía: **2026-10-04**.
 
-- Los eventos tienen fechas de **julio 2026** (p. ej. `2026-07-04`,
-  `2026-07-05`, `2026-07-12`).
-- La fecha actual es **septiembre 2026**: los eventos de ejemplo ya pasaron.
-- Los cantos y repertorios también son de ejemplo.
+- Los ensayos del 28, 29 y 30 de septiembre (`evt-001`–`evt-003`) y las misas
+  y el encuentro del 2 y 3 de octubre (`evt-004`, `evt-005`) **ya pasaron**.
+- El **próximo evento** es **`evt-006` "Novena a San Daniel Comboni"**
+  (`2026-10-05`, 18:00, Parroquia San Daniel Comboni).
+- Solo **`evt-001`** (pasado) tiene repertorio asociado (`rep-001`,
+  "Repertorio Ensayo"); el resto de eventos no tiene `repertoireId`.
+- Los eventos reales **no tienen** `meetingTime` (hora de reunión); el campo es
+  opcional y hoy no está presente en los datos.
+- Los cantos son `song-001` ("Canto de Alabanza") y `song-002` ("Canto de
+  Comunión").
 
-Esto afecta directamente la tarea "encontrar el próximo evento". Antes de la
-prueba, el evaluador o el coordinador debe elegir una de estas opciones:
-
-| Opción | Qué hacer | Cuándo conviene |
-|---|---|---|
-| **A. Avisar y reformular** | Avisar a los usuarios que los datos son de ejemplo y reformular la tarea como "encontrar el primer evento de la lista" o "encontrar un evento de julio". | Cuando se quiere probar ya, sin tocar datos. |
-| **B. Actualizar datos reales** | El coordinador actualiza `data/*.json` con fechas y eventos reales antes de la prueba (requiere editar los JSON; es una decisión del coordinador, no de esta guía). | Cuando se quiere probar con contenido realista. |
-| **C. Probar local con fechas nuevas** | Copiar el sitio, actualizar fechas en la copia local y servir con `python -m http.server 8080`; decidir después si se publica. | Cuando se quiere probar "próximo evento" real sin publicar aún. |
-
-**Recomendación:** si el objetivo es validar navegación y comprensión, la
-opción A es suficiente y la más rápida. Si el objetivo incluye validar si el
-contenido es útil, usar la opción B o C. En cualquier caso, **registrar en la
-planilla qué opción se usó**, porque cambia la interpretación de la tarea 1.
+Si la prueba se ejecuta en una fecha posterior al 2026-10-04, "el próximo
+evento" puede cambiar: registrar la fecha real de la sesión y recalcular el
+dato esperado de la tarea 1. Para editar o actualizar los datos, ver
+[guia-mantenimiento.md](guia-mantenimiento.md).
 
 ---
 
@@ -68,7 +66,7 @@ interpretarse sobre la cantidad real.
 ### Checklist antes de la prueba
 
 - [ ] Verificar que la URL publicada abre en el dispositivo que usará el usuario.
-- [ ] Decidir y anotar la opción de datos ficticios (A, B o C de la sección 1).
+- [ ] Anotar la fecha real de la sesión (el "próximo evento" depende de la fecha).
 - [ ] Imprimir o tener a mano: esta guía, una planilla por usuario (sección 6) y algo para anotar.
 - [ ] Preparar el dispositivo (celular o computadora) con batería e internet.
 - [ ] Avisar al usuario que la prueba dura unos 15–20 minutos y que no hay respuestas incorrectas.
@@ -112,8 +110,8 @@ Reglas de oro del evaluador:
 ## 4. Tareas de prueba
 
 Ejecutar en orden. Para cada tarea: leer la instrucción al usuario, observar en
-silencio y anotar. El "dato esperado" usa los datos de ejemplo actuales; si se
-actualizaron los datos (opción B o C), ajustar el dato esperado.
+silencio y anotar. Los "datos esperados" usan los datos reales de `data/*.json`
+con fecha base 2026-10-04.
 
 ### Tarea 1 — Encontrar el próximo evento
 
@@ -121,9 +119,12 @@ actualizaron los datos (opción B o C), ajustar el dato esperado.
   ministerio. ¿Cómo lo buscarías?"
 - **Qué observar:** por dónde empieza (landing, menú, calendario), si duda, si
   pregunta, cuánto tarda.
-- **Dato esperado (datos de ejemplo):** el primer evento de la lista es
-  "Ensayo de Coro — Semana 1" (2026-07-04). Con datos actualizados, el próximo
-  evento real.
+- **Dato esperado:** el próximo evento es `evt-006` "Novena a San Daniel
+  Comboni" (2026-10-05, 18:00). Desde el 2026-10-04 ya pasaron los ensayos del
+  28–30 de septiembre y las misas/encuentro del 2–3 de octubre; la vista
+  `#/eventos` muestra **todos** los eventos publicados ordenados por fecha
+  (incluidos los pasados), mientras que "Próximos encuentros" en la landing
+  solo muestra de hoy en adelante.
 
 ### Tarea 2 — Abrir el detalle del evento
 
@@ -131,49 +132,58 @@ actualizaron los datos (opción B o C), ajustar el dato esperado.
 - **Qué observar:** si identifica que el evento es clicable, si logra abrir el
   detalle, si sabe volver a la lista.
 
-### Tarea 3 — Identificar la hora de reunión
+### Tarea 3 — Identificar la hora del evento
 
-- **Instrucción:** "¿A qué hora hay que llegar para la reunión de ese evento?"
-- **Qué observar:** si distingue la **hora de reunión** (llegada) de la **hora
-  del evento** (inicio). Es un punto donde suele haber confusión.
-- **Dato esperado (ejemplo):** hora de reunión 17:30; hora del evento 18:00.
+- **Instrucción:** "¿A qué hora es ese evento?"
+- **Qué observar:** si encuentra la hora en el detalle sin rebuscar, y si
+  entiende que es la hora de inicio.
+- **Dato esperado:** 18:00 (`evt-006`). Nota: los eventos reales **no tienen**
+  `meetingTime` (hora de reunión), por lo que hoy no hay una hora de llegada
+  separada; si un evento futuro incorpora ese campo, esta tarea puede pedir
+  distinguir ambas.
 
 ### Tarea 4 — Identificar el lugar
 
 - **Instrucción:** "¿Dónde se realiza ese evento?"
 - **Qué observar:** si encuentra el lugar en el detalle sin rebuscar.
-- **Dato esperado (ejemplo):** "Sala de Música Principal".
+- **Dato esperado:** "Parroquia San Daniel Comboni" (`evt-006`).
 
 ### Tarea 5 — Abrir el repertorio
 
 - **Instrucción:** "¿Qué cantos se van a tocar en ese evento?"
-- **Qué observar:** si encuentra el repertorio dentro del detalle, si entiende
-  la lista de cantos, si nota el orden.
-- **Dato esperado (ejemplo):** el evento "Ensayo de Coro — Semana 1" tiene el
-  repertorio "Repertorio Ensayo Julio — Semana 1" con 2 cantos.
-- **Nota:** solo ese evento tiene repertorio en los datos de ejemplo. Si el
-  usuario elige otro evento, verá el estado "sin repertorio": observar cómo
-  reacciona y si lo entiende.
+- **Qué observar:** primero, cómo reacciona ante el estado "sin repertorio"
+  (el próximo evento `evt-006` no tiene `repertoireId`). Luego pedir que abra
+  `evt-001` "Ensayo" (2026-09-28) como demo y observar si encuentra la lista de
+  cantos y si nota el orden.
+- **Dato esperado:** `evt-001` tiene el repertorio `rep-001` "Repertorio
+  Ensayo" con 2 cantos (song-001 y song-002, en ese orden).
+- **Nota:** `evt-001` es el único evento con repertorio y es pasado; el próximo
+  evento (`evt-006`) no tiene repertorio. Registrar si el estado vacío se
+  entiende.
 
 ### Tarea 6 — Abrir un canto del repertorio
 
 - **Instrucción:** "Abrí uno de los cantos del repertorio."
 - **Qué observar:** si navega al detalle del canto, si lee la letra, si sabe
   volver al repertorio o al evento.
+- **Nota:** depende de haber abierto `evt-001` en la tarea 5; si no se abrió,
+  omitir o marcar N/A.
 
 ### Tarea 7 — Buscar un canto
 
 - **Instrucción:** "Buscá un canto que hable de comunión."
 - **Qué observar:** si usa el buscador de cantos, si escribe bien el término,
   si entiende los resultados y el estado vacío (si no hay coincidencias).
-- **Dato esperado (ejemplo):** "Canto de Comunión" (song-002).
+- **Dato esperado:** "Canto de Comunión" (song-002).
 
 ### Tarea 8 — Calendario (adicional, si el tiempo alcanza)
 
-- **Instrucción:** "Usá el calendario para ver en qué día de julio hay un
+- **Instrucción:** "Usá el calendario para ver en qué días de octubre hay un
   evento."
 - **Qué observar:** si navega entre meses, si entiende los días marcados, si
   abre el detalle desde el calendario.
+- **Dato esperado:** en octubre de 2026 están marcados los días **2, 3, 5, 8,
+  11, 18, 24, 25 y 31**.
 
 ---
 
@@ -209,7 +219,7 @@ Hacer después de las tareas, en conversación. Anotar respuestas textuales.
 | Dispositivo (celular / computadora) | |
 | Fecha y hora | |
 | Evaluador | |
-| Opción de datos ficticios usada (A / B / C) | |
+| Fecha real de la sesión | |
 
 ### Registro por tarea
 
@@ -220,7 +230,7 @@ observaciones.
 |---|---|---|---|
 | 1 | Encontrar próximo evento | | |
 | 2 | Abrir detalle del evento | | |
-| 3 | Identificar hora de reunión | | |
+| 3 | Identificar hora del evento | | |
 | 4 | Identificar lugar | | |
 | 5 | Abrir repertorio | | |
 | 6 | Abrir un canto | | |
@@ -273,8 +283,9 @@ observaciones.
   mejor guía antes de la Fase 10.
 - **Si nadie menciona login:** se confirma que la POC estática sin login es
   suficiente para consulta pública.
-- **Si los usuarios no entienden que los datos son de ejemplo:** la opción A
-  no se explicó bien; anotarlo y repetir con la opción B o C.
+- **Si el "próximo evento" esperado ya pasó (prueba tardía):** registrar la
+  fecha real de la sesión y recalcular el dato esperado de la tarea 1 antes de
+  interpretar el resultado.
 
 ### Decisión final
 
@@ -309,16 +320,16 @@ Consolidar aquí todos los hallazgos de las planillas. Una fila por mejora.
 5. La decisión final de qué se implementa la toma el coordinador (o Álvaro),
    no el evaluador. Esta guía solo consolida la evidencia.
 
-Recordar que la Fase 10 del roadmap incluye "agregar datos reales": si la
-prueba confirma que el contenido de ejemplo confunde, actualizar `data/*.json`
-con datos reales es una mejora prioritaria.
+Recordar que la Fase 10 del roadmap incluye ajustes posteriores: como los datos
+ya son reales, mantener `data/*.json` al día es una mejora prioritaria (ver
+[guia-mantenimiento.md](guia-mantenimiento.md)).
 
 ---
 
 ## 9. Checklist de cierre de la prueba
 
 - [ ] Se completaron las planillas de los 6 usuarios (o la cantidad real).
-- [ ] Se registró la opción de datos ficticios usada (A / B / C).
+- [ ] Se registró la fecha real de la sesión.
 - [ ] Se consolidaron las mejoras en la sección 8.
 - [ ] Se evaluaron los 4 criterios de éxito de la sección 7.
 - [ ] Se decidió (con el coordinador) qué mejoras pasan a la Fase 10.

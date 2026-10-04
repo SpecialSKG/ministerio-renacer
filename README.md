@@ -90,6 +90,8 @@ La documentación absorbida del producto vive en [`docs/`](docs/README.md), con
 - Diseño / UI: [`docs/07-brief-diseno-ui-ux.md`](docs/07-brief-diseno-ui-ux.md)
 - Flujo / navegación: [`docs/08-app-flow.md`](docs/08-app-flow.md)
 - Plan / roadmap: [`docs/10-plan-implementacion.md`](docs/10-plan-implementacion.md)
+- Mantenimiento de datos (eventos, cantos y repertorios):
+  [`docs/guia-mantenimiento.md`](docs/guia-mantenimiento.md)
 - Reportes técnicos y de iteración: [`docs/reports/`](docs/reports/)
 
 ## Despliegue — GitHub Pages (publicado)

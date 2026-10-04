@@ -52,9 +52,10 @@ perfil aporta únicamente el contexto de dominio del producto.
     1.1) con `@font-face` en `assets/css/styles.css`; sin dependencia externa de
     fuentes en runtime. Referencia:
     `docs/reports/reporte-tecnico-final-rediseno-identidad.md`.
-  - Deuda menor vigente: los estados vacíos/error de las vistas dinámicas usan
-    `<h3>` en lugar de `<h1>` (preexistente; cada vista ya declara su `<h1>` de
-    contenido). Referencia:
+  - Resuelta en Fase 10: los estados vacíos/error de las vistas dinámicas dentro
+    de `#dynamic-view` ya no usan `<h3>`; ahora usan `<h1>` y, cuando la vista ya
+    declara su `<h1>` de contenido, `<h2>` (p. ej. "Sin resultados"). Evidencia:
+    `assets/js/app.js` (cambio de Fase 10). Referencia:
     `docs/reports/reporte-tecnico-final-rediseno-identidad.md`.
 
 ## Stack

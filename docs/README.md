@@ -21,6 +21,7 @@ se mezcla aquí.
 | [`07-brief-diseno-ui-ux.md`](07-brief-diseno-ui-ux.md) | Brief de diseño UI/UX | POC |
 | [`08-app-flow.md`](08-app-flow.md) | Flujo de navegación de la aplicación | POC |
 | [`10-plan-implementacion.md`](10-plan-implementacion.md) | Plan de implementación por fases y roadmap | POC — fuente del estado por fases |
+| [`guia-mantenimiento.md`](guia-mantenimiento.md) | Guía de mantenimiento: esquemas de `data/*.json`, relaciones, validación del JSON y publicación manual | POC |
 
 ## Documentos de etapa moderna (referencia futura, NO implementada en la POC)
 
