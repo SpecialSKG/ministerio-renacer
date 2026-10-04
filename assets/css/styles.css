@@ -800,24 +800,13 @@ em { font-style: italic; }
   animation: blob-drift 13s var(--ease-in-out) infinite alternate-reverse;
 }
 
-.nosotros-icon {
+.nosotros-illustration {
   position: relative;
-  width: 74px;
-  height: 74px;
+  z-index: 1;
+  width: min(100%, 480px);
+  height: auto;
   color: var(--blob-icon-ink);
   filter: var(--blob-icon-glow);
-}
-
-.media-caption {
-  position: absolute;
-  bottom: 4%;
-  font-size: 0.82rem;
-  color: var(--muted);
-  background: var(--surface);
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  transition: background-color var(--theme-ease), border-color var(--theme-ease);
 }
 
 .nosotros-copy p + p { margin-top: 14px; }
@@ -1073,6 +1062,9 @@ em { font-style: italic; }
   border-radius: var(--radius-lg);
   box-shadow: var(--cal-card-shadow);
   padding: clamp(18px, 3vw, 32px);
+  /* Contiene el desborde horizontal de los tooltips absolutos en viewports
+     angostos sin recortarlos verticalmente (pueden salir por arriba de la card). */
+  overflow-x: clip;
   transition: background-color var(--theme-ease), border-color var(--theme-ease), box-shadow var(--theme-ease);
 }
 
@@ -1287,6 +1279,13 @@ button.cal-day.is-selected:hover {
   text-decoration: none;
 }
 .cal-tooltip a:hover { text-decoration: underline; }
+
+/* En dispositivos táctiles el tooltip no aporta: el tap abre el panel de
+   detalle con el enlace "Ver evento completo". Ocultarlo además elimina su
+   desborde geométrico en móvil. Se mantiene en equipos con hover real. */
+@media (hover: none) {
+  .cal-tooltip { display: none; }
+}
 
 /* ---------- Cantos (teaser landing) ---------- */
 .canto-teaser {
@@ -1521,6 +1520,24 @@ button.cal-day.is-selected:hover {
 .detail-title { margin-bottom: 14px; }
 .detail-head .event-type-badge { margin-top: 2px; }
 
+/* Acciones bajo el título del detalle: badge de tipo + compartir */
+.detail-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+.detail-head-actions .event-type-badge { margin-top: 0; }
+
+/* Compartir por WhatsApp: acción secundaria con hit area >= 44px */
+.btn-share {
+  min-height: 44px;
+  padding: 10px 20px;
+  font-size: 0.92rem;
+}
+.btn-share svg { width: 20px; height: 20px; }
+
 .event-type-badge {
   display: inline-block;
   background: var(--type-badge-bg);
@@ -1574,10 +1591,14 @@ button.cal-day.is-selected:hover {
 
 .event-detail-block { line-height: 1.7; }
 
-/* ---- Buscador de cantos ---- */
+/* ---- Buscador y filtros de cantos ---- */
+.song-filter {
+  max-width: 720px;
+  margin: 0 auto 28px;
+}
 .song-search {
   max-width: 600px;
-  margin: 0 auto 28px;
+  margin: 0 auto 18px;
 }
 .song-search input {
   width: 100%;
@@ -1596,6 +1617,45 @@ button.cal-day.is-selected:hover {
   border-color: var(--terracotta);
   box-shadow: 0 0 0 3px var(--terracotta-soft);
 }
+
+/* ---- Chips de filtro por categoría (hit area >= 44px) ---- */
+.song-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.song-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1.5px solid var(--btn-ghost-line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), color var(--theme-ease);
+}
+.song-chip:hover {
+  border-color: var(--terracotta-deep);
+  background: var(--btn-ghost-hover-bg);
+}
+.song-chip.is-active {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-ink);
+  border-color: var(--btn-primary-bg);
+}
+.song-chip:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.song-chip:active { transform: scale(0.97); }
 
 /* ---- Grid y cards de cantos ---- */
 .songs-grid {
@@ -1864,4 +1924,5 @@ button.cal-day.is-selected:hover {
      movimiento reducido. */
   .back-to-top:active { transform: none; }
   .event-nav-arrow:active { transform: translateY(-50%); }
+  .btn-share:active { transform: none; }
 }

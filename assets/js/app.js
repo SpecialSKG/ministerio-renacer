@@ -18,6 +18,7 @@ let eventsData = null;
 let songsData = null;
 let repertoiresData = null;
 let eventsLoadError = false;
+let songCategoryFilter = null; // null = todas las categorías
 
 // --- Tema ---
 const THEME_KEY = 'mr-theme';
@@ -30,7 +31,9 @@ const eventsByDate = new Map();
 
 // --- Utilidades ---
 async function loadJSON(url) {
-  const response = await fetch(url);
+  // cache: 'no-store' evita que el navegador sirva datos viejos tras actualizar
+  // los JSON en data/. El sitio es estático y los datos son la fuente de verdad.
+  const response = await fetch(url, { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Error ${response.status}: ${response.statusText} al cargar ${url}`);
   }
@@ -307,6 +310,12 @@ function showEventDetail(id) {
   if (evt.dressCodeMen) dress.push('<div class="detail-row"><span class="detail-label">Vestimenta hombres</span><span class="detail-value">' + escapeHTML(evt.dressCodeMen) + '</span></div>');
   if (evt.dressCodeWomen) dress.push('<div class="detail-row"><span class="detail-label">Vestimenta mujeres</span><span class="detail-value">' + escapeHTML(evt.dressCodeWomen) + '</span></div>');
 
+  // Enlace de compartir por WhatsApp: título del evento + URL canónica.
+  // El texto va URL-encoded; el href no admite caracteres peligrosos pero se
+  // escapa igual al insertarlo para mantener el patrón del archivo.
+  var eventUrl = window.location.origin + window.location.pathname + '#/evento/' + evt.id;
+  var shareHref = 'https://wa.me/?text=' + encodeURIComponent(evt.title + '\n' + eventUrl);
+
   dynamic.innerHTML = '\
     <section class="section">\
       <div class="event-detail-wrap">' +
@@ -316,7 +325,13 @@ function showEventDetail(id) {
           <header class="detail-head">\
             <p class="section-eyebrow">Evento</p>\
             <h1 class="section-title detail-title" tabindex="-1">' + gradLastWord(evt.title) + '</h1>\
-            <span class="event-type-badge">' + escapeHTML(typeLabel(evt.type)) + '</span>\
+            <div class="detail-head-actions">\
+              <span class="event-type-badge">' + escapeHTML(typeLabel(evt.type)) + '</span>\
+              <a class="btn btn-ghost btn-share" href="' + escapeHTML(shareHref) + '" target="_blank" rel="noopener noreferrer" aria-label="Compartir este evento por WhatsApp">\
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/></svg>\
+                <span>Compartir</span>\
+              </a>\
+            </div>\
           </header>\
           <div class="event-detail-grid">\
             <div class="detail-row">\
@@ -520,11 +535,23 @@ function showSongList() {
     return;
   }
 
+  // Chips derivados de los cantos cargados, en orden de aparición.
+  var chipsHTML = '<button type="button" class="song-chip is-active" data-category="" aria-pressed="true">Todas</button>' +
+    songCategories().map(function (category) {
+      return '<button type="button" class="song-chip" data-category="' + escapeHTML(category) + '" aria-pressed="false">' +
+        escapeHTML(categoryLabel(category)) + '</button>';
+    }).join('');
+
+  songCategoryFilter = null;
+
   dynamic.innerHTML = '\
     <section class="section">\
       <div class="section-head"><h1 class="section-title">Biblioteca de <em class="grad">cantos</em></h1></div>\
-      <div class="song-search" role="search" aria-label="Buscar cantos">\
-        <input id="song-search-input" type="search" placeholder="Buscar por título, categoría o etiqueta…" aria-label="Buscar cantos por título, categoría o etiqueta">\
+      <div class="song-filter">\
+        <div class="song-search" role="search" aria-label="Buscar cantos">\
+          <input id="song-search-input" type="search" placeholder="Buscar por título, categoría o etiqueta…" aria-label="Buscar cantos por título, categoría o etiqueta">\
+        </div>\
+        <div class="song-chips" role="group" aria-label="Filtrar cantos por categoría">' + chipsHTML + '</div>\
       </div>\
       <div id="songs-container" class="songs-grid">' + songsData.map(songCardHTML).join('') + '</div>\
       <div id="songs-empty" class="empty-state hidden"></div>\
@@ -534,6 +561,37 @@ function showSongList() {
   var input = document.getElementById('song-search-input');
   input.addEventListener('input', function () {
     filterSongList(input.value);
+  });
+
+  var chips = document.querySelector('.song-chips');
+  if (chips) {
+    chips.addEventListener('click', function (e) {
+      var chip = e.target.closest('.song-chip');
+      if (!chip) return;
+      songCategoryFilter = chip.dataset.category || null;
+      updateSongChips();
+      filterSongList(input.value);
+    });
+  }
+}
+
+// Categorías únicas en orden de aparición en los datos.
+function songCategories() {
+  var categories = [];
+  (songsData || []).forEach(function (song) {
+    if (song && song.category && categories.indexOf(song.category) === -1) {
+      categories.push(song.category);
+    }
+  });
+  return categories;
+}
+
+// Sincroniza el estado visual y accesible de los chips con el filtro activo.
+function updateSongChips() {
+  document.querySelectorAll('.song-chip').forEach(function (chip) {
+    var active = (chip.dataset.category || null) === songCategoryFilter;
+    chip.classList.toggle('is-active', active);
+    chip.setAttribute('aria-pressed', String(active));
   });
 }
 
@@ -551,19 +609,17 @@ function songCardHTML(song) {
     </a>';
 }
 
+// Filtro combinado (AND): categoría seleccionada + texto libre.
 function filterSongList(query) {
   var container = document.getElementById('songs-container');
   var empty = document.getElementById('songs-empty');
   if (!container || !empty) return;
 
   var q = normalizeText(query).trim();
-  if (!q) {
-    container.innerHTML = songsData.map(songCardHTML).join('');
-    empty.classList.add('hidden');
-    return;
-  }
 
-  var results = songsData.filter(function (song) {
+  var results = (songsData || []).filter(function (song) {
+    if (songCategoryFilter && song.category !== songCategoryFilter) return false;
+    if (!q) return true;
     var haystack = [
       song.title,
       song.category,
@@ -576,13 +632,18 @@ function filterSongList(query) {
 
   if (results.length === 0) {
     container.innerHTML = '';
+    var message = q
+      ? 'No se encontraron cantos para “' + escapeHTML(query) + '”.'
+      : 'No hay cantos en esta categoría.';
     empty.innerHTML = '<h3>Sin resultados</h3>' +
-      '<p>No se encontraron cantos para “' + escapeHTML(query) + '”.</p>' +
+      '<p>' + message + '</p>' +
       '<button id="song-clear-search" class="btn btn-primary" type="button">Limpiar búsqueda</button>';
     empty.classList.remove('hidden');
     document.getElementById('song-clear-search').addEventListener('click', function () {
       var input = document.getElementById('song-search-input');
       if (input) input.value = '';
+      songCategoryFilter = null;
+      updateSongChips();
       filterSongList('');
     });
     return;
@@ -815,6 +876,17 @@ function eventsOnDate(key) {
   return eventsByDate.get(key) || [];
 }
 
+// Primer evento publicado con fecha >= hoy (ordenado). Devuelve null si no hay
+// futuros. Se usa para abrir el calendario en el mes del próximo evento cuando
+// el mes actual no tiene actividad y para la nota del detalle.
+function nextFutureEvent() {
+  var tKey = todayKey();
+  var upcoming = (eventsData || [])
+    .filter(function (e) { return e && e.status === 'published' && e.date && e.date >= tKey; })
+    .sort(function (a, b) { return a.date.localeCompare(b.date); });
+  return upcoming.length > 0 ? upcoming[0] : null;
+}
+
 // Crea una instancia independiente del calendario dentro de rootEl.
 // Sin IDs globales: usa data-* y queries acotadas al root para permitir
 // varias instancias (landing y #/eventos). El prefijo de instancia evita
@@ -833,6 +905,26 @@ function createCalendar(rootEl, instanceId) {
   state.viewYear = now.getFullYear();
   state.viewMonth = now.getMonth();
   state.selectedKey = null;
+
+  // Si el mes actual no tiene ningún evento pero hay eventos futuros, abrir el
+  // calendario en el mes del próximo evento. Con actividad en el mes actual, o
+  // sin eventos futuros, se conserva el mes actual.
+  var currentMonthPrefix = state.viewYear + '-' + pad2(state.viewMonth + 1);
+  var currentMonthHasEvents = false;
+  eventsByDate.forEach(function (list, k) {
+    if (k.startsWith(currentMonthPrefix)) currentMonthHasEvents = true;
+  });
+
+  if (!currentMonthHasEvents) {
+    var upcoming = nextFutureEvent();
+    if (upcoming) {
+      var upcomingDate = new Date(upcoming.date + 'T12:00:00');
+      if (!Number.isNaN(upcomingDate.getTime())) {
+        state.viewYear = upcomingDate.getFullYear();
+        state.viewMonth = upcomingDate.getMonth();
+      }
+    }
+  }
 
   rootEl.innerHTML = '\
     <div class="calendar-head">\
@@ -983,8 +1075,23 @@ function createCalendar(rootEl, instanceId) {
     });
 
     if (monthEvents.length === 0) {
-      detail.innerHTML = '<p class="detail-hint">No hay eventos en ' + escapeHTML(monthTitle()) +
-        '. Navegá a otro mes para ver ensayos, eucaristías y talleres.</p>';
+      var emptyHint = 'No hay eventos en ' + escapeHTML(monthTitle()) +
+        '. Navegá a otro mes para ver ensayos, eucaristías y talleres.';
+
+      // Nota breve solo al mirar el mes actual sin eventos: indica el próximo.
+      var isCurrentMonth = state.viewYear === now.getFullYear() && state.viewMonth === now.getMonth();
+      if (isCurrentMonth) {
+        var upcoming = nextFutureEvent();
+        if (upcoming) {
+          var upcomingDate = new Date(upcoming.date + 'T12:00:00');
+          if (!Number.isNaN(upcomingDate.getTime())) {
+            var upcomingLabel = upcomingDate.toLocaleDateString('es', { day: 'numeric', month: 'long' });
+            emptyHint += ' El próximo evento es el ' + escapeHTML(upcomingLabel) + '.';
+          }
+        }
+      }
+
+      detail.innerHTML = '<p class="detail-hint">' + emptyHint + '</p>';
       return;
     }
 

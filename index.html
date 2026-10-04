@@ -109,12 +109,46 @@
           <div class="nosotros-media" aria-hidden="true">
             <div class="blob blob-large"></div>
             <div class="blob blob-small"></div>
-            <svg class="nosotros-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 18V5l12-2v13"/>
-              <circle cx="6" cy="18" r="3"/>
-              <circle cx="18" cy="16" r="3"/>
+            <svg class="nosotros-illustration" viewBox="0 0 520 420" aria-hidden="true" focusable="false">
+              <!-- Arcos de sonido que emanan de la nota central -->
+              <g fill="none" stroke="currentColor" stroke-linecap="round">
+                <path d="M285 125a80 80 0 0 1 80 80" stroke-width="2.5" opacity="0.5"/>
+                <path d="M285 85a120 120 0 0 1 120 120" stroke-width="2.5" opacity="0.32"/>
+                <path d="M285 45a160 160 0 0 1 160 160" stroke-width="2.5" opacity="0.16"/>
+              </g>
+
+              <!-- Pentagrama ondulado -->
+              <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" opacity="0.22">
+                <path d="M30 170c110-8 170 8 270 0s170-8 220 0"/>
+                <path d="M30 190c110-8 170 8 270 0s170-8 220 0"/>
+                <path d="M30 210c110-8 170 8 270 0s170-8 220 0"/>
+                <path d="M30 230c110-8 170 8 270 0s170-8 220 0"/>
+                <path d="M30 250c110-8 170 8 270 0s170-8 220 0"/>
+              </g>
+
+              <!-- Forma orgánica detrás de la nota central -->
+              <circle cx="285" cy="205" r="56" fill="var(--grad-b)" opacity="0.18"/>
+
+              <!-- Notas musicales -->
+              <g fill="currentColor">
+                <ellipse cx="160" cy="235" rx="15" ry="11" transform="rotate(-18 160 235)"/>
+                <rect x="172" y="163" width="5" height="74" rx="2.5"/>
+                <path d="M177 163c20 6 30 18 26 40-3-15-13-22-26-24z"/>
+
+                <ellipse cx="285" cy="205" rx="15" ry="11" transform="rotate(-18 285 205)"/>
+                <rect x="297" y="133" width="5" height="74" rx="2.5"/>
+                <path d="M302 133c20 6 30 18 26 40-3-15-13-22-26-24z"/>
+
+                <ellipse cx="410" cy="220" rx="15" ry="11" transform="rotate(-18 410 220)"/>
+                <rect x="422" y="148" width="5" height="74" rx="2.5"/>
+                <path d="M427 148c20 6 30 18 26 40-3-15-13-22-26-24z"/>
+              </g>
+
+              <!-- Acentos de color del tema -->
+              <circle cx="110" cy="120" r="7" fill="var(--terracotta)" opacity="0.85"/>
+              <circle cx="455" cy="300" r="10" fill="var(--grad-b)" opacity="0.55"/>
+              <circle cx="80" cy="330" r="5" fill="currentColor" opacity="0.4"/>
             </svg>
-            <p class="media-caption">Imagen de muestra del ministerio</p>
           </div>
           <div class="nosotros-copy">
             <p class="section-eyebrow">Quiénes somos</p>
@@ -221,7 +255,7 @@
             <p class="section-note">Una colección de cantos litúrgicos con letras, acordes y tonalidad. Buscá por título, categoría o etiqueta en la biblioteca completa.</p>
           </div>
           <div class="canto-teaser">
-            <a href="#/cantos" class="btn btn-primary">
+            <a href="#/cantos" class="btn btn-ghost">
               Ir a la biblioteca de cantos
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a>
@@ -236,7 +270,7 @@
           <h2 id="contacto-title" class="section-title">Querés <em class="grad">sumarte?</em></h2>
           <p class="section-lead">Si cantás, tocás un instrumento o simplemente querés acompañar, escribinos. Siempre hay lugar para una voz más en el coro.</p>
           <p><span class="contact-label">Coordinación:</span> <a href="mailto:coordinacion@ministeriorenacer.org">coordinacion@ministeriorenacer.org</a></p>
-          <a class="btn btn-primary" href="mailto:coordinacion@ministeriorenacer.org">Escribinos un correo</a>
+          <a class="btn btn-ghost" href="mailto:coordinacion@ministeriorenacer.org">Escribinos un correo</a>
         </div>
         <svg class="contact-wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true" focusable="false">
           <path d="M0 45 C 120 10 240 80 360 45 C 480 10 600 80 720 45 C 840 10 960 80 1080 45 C 1200 10 1320 80 1440 45" fill="none" stroke="var(--wave-a)" stroke-width="3" stroke-linecap="round"/>
