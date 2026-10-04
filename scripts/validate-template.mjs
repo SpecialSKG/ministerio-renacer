@@ -248,10 +248,19 @@ if (mcpException("playwright")) {
   )
     .split(/\s+/)
     .filter(Boolean);
-  for (const flag of ["--isolated", "--headless", "--block-service-workers"]) {
+  for (const flag of ["--isolated", "--block-service-workers"]) {
     if (!tokens.includes(flag)) {
       fail(`opencode.json: playwright excepcionado debe conservar ${flag}`);
     }
+  }
+  // El modo headless es OPCIONAL. Por decisión explícita del usuario el
+  // navegador puede correr visible (headed) para observar las validaciones;
+  // el default del template sigue siendo headless. Se registra el modo
+  // observado para trazabilidad sin debilitar el resto de guardas.
+  if (tokens.includes("--headless")) {
+    ok("opencode.json: playwright excepcionado en modo headless (default del template)");
+  } else {
+    ok("opencode.json: playwright excepcionado en modo headed (navegador visible por decisión explícita del usuario)");
   }
   // Flags peligrosos: una excepción no puede relajar el sandbox ni abrir la
   // sesión a tráfico remoto. Guarda futura: la config actual no los usa.

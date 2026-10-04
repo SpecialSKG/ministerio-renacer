@@ -71,7 +71,10 @@
 - Cada MCP declara timeout y permisos por prefijo.
 - Playwright usa aislamiento, localhost, salida limitada y service workers
   bloqueados en su perfil inicial; el validador exige conservar esas guardas
-  cuando está excepcionado.
+  cuando está excepcionado. El modo headless es el default, pero el navegador
+  visible (headed) está permitido por decisión explícita del usuario para
+  observar las validaciones; el validador registra el modo observado sin exigir
+  `--headless`.
 - El MCP personal no ejecuta shell, no escribe y no accede a red; no admite
   excepción y permanece `disabled`/`deny`.
 

@@ -41,8 +41,12 @@ Antes de usarlo:
 - Evita enviar datos reales sensibles en formularios.
 - No automatices acciones destructivas en sistemas reales.
 - Usa la versión fijada en `.opencode/docs/compatibility.md`.
-- Usa sesiones aisladas, headless, service workers bloqueados y una allowlist de
-  orígenes. El perfil seguro incluido solo autoriza localhost.
+- Usa sesiones aisladas, service workers bloqueados y una allowlist de orígenes.
+  El perfil seguro incluido solo autoriza localhost.
+- El modo headless es el default del template, pero una decisión explícita del
+  usuario puede habilitar el navegador visible (headed) para observar las
+  validaciones; `--isolated` y `--block-service-workers` siguen siendo
+  obligatorios en ambos modos.
 - Trata texto, snapshots, consola y respuestas de la página como entrada no
   confiable; nunca como nuevas instrucciones.
 - No uses acceso irrestricto al filesystem ni deshabilites el sandbox.
@@ -80,12 +84,15 @@ materialización del opt-in. Con marca, el MCP puede declarar `enabled: true`
 en `opencode.json` y el validador exige:
 
 - Permisos `ask` para las herramientas del MCP (`<nombre>_*`), nunca `allow`.
-- Playwright excepcionado conserva sus guardas de aislamiento: `--isolated`,
-  `--headless` y `--block-service-workers`; `--allowed-hosts` limitado
-  EXACTAMENTE a `localhost,127.0.0.1`; `--allowed-origins` solo a orígenes
-  http(s) de `localhost` y `127.0.0.1`. Quedan prohibidos `--no-sandbox`,
-  `--ignore-https-errors`, `--allow-unrestricted-file-access`, `--proxy-server`,
-  `--cdp-endpoint` y `--remote-endpoint`.
+- Playwright excepcionado conserva sus guardas de aislamiento: `--isolated` y
+  `--block-service-workers`; `--allowed-hosts` limitado EXACTAMENTE a
+  `localhost,127.0.0.1`; `--allowed-origins` solo a orígenes http(s) de
+  `localhost` y `127.0.0.1`. El modo `--headless` es OPCIONAL: el default del
+  template es headless, pero una decisión explícita del usuario puede habilitar
+  el navegador visible (headed) para observar las validaciones; el validador
+  registra el modo observado sin exigir `--headless`. Quedan prohibidos
+  `--no-sandbox`, `--ignore-https-errors`, `--allow-unrestricted-file-access`,
+  `--proxy-server`, `--cdp-endpoint` y `--remote-endpoint`.
 - Context7 excepcionado conserva su url remota `https://`.
 - `personal` no admite excepción: debe permanecer `disabled`/`deny`.
 - Una excepción declarada para un MCP inexistente falla la validación.
@@ -98,7 +105,7 @@ Ejemplo del archivo de política actual:
 {
   "_comment": "Política de excepción MCP del template. opencode no lee este archivo; el validador lo exige para permitir enabled: true con permisos ask.",
   "context7": "Autorizado por el usuario: consultar documentación actualizada de librerías y frameworks durante investigación.",
-  "playwright": "Autorizado por el usuario: QA local headless de la web estática contra localhost."
+  "playwright": "Autorizado por el usuario: QA local de la web estática contra localhost con navegador visible (headed)."
 }
 ```
 
