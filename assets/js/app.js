@@ -240,7 +240,7 @@ function showEventList() {
   scrollToTop();
 
   if (!eventsData || eventsData.length === 0) {
-    dynamic.innerHTML = '<div class="empty-state"><h3>Sin eventos disponibles</h3>' +
+    dynamic.innerHTML = '<div class="empty-state"><h1>Sin eventos disponibles</h1>' +
       '<p>No hay eventos disponibles.</p>' +
       '<div class="back-link"><a href="#/inicio">← Volver al inicio</a></div></div>';
     return;
@@ -249,7 +249,7 @@ function showEventList() {
   var published = publishedEventsSorted();
 
   if (published.length === 0) {
-    dynamic.innerHTML = '<div class="empty-state"><h3>Sin eventos publicados</h3>' +
+    dynamic.innerHTML = '<div class="empty-state"><h1>Sin eventos publicados</h1>' +
       '<p>No hay eventos publicados próximamente.</p>' +
       '<div class="back-link"><a href="#/inicio">← Volver al inicio</a></div></div>';
     return;
@@ -284,7 +284,7 @@ function showEventDetail(id) {
       <section class="section">\
         <div class="event-detail">\
           <div class="empty-state">\
-            <h3>Evento no encontrado</h3>\
+            <h1>Evento no encontrado</h1>\
             <p>Este evento no está disponible.</p>\
             <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
           </div>\
@@ -529,7 +529,7 @@ function showSongList() {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
-          <h3>No se pudieron cargar los cantos</h3>\
+          <h1>No se pudieron cargar los cantos</h1>\
           <p>No se pudieron cargar los cantos. Verifica los archivos de datos.</p>\
           <div class="back-link"><a href="#/inicio">← Volver al inicio</a></div>\
         </div>\
@@ -541,7 +541,7 @@ function showSongList() {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
-          <h3>Sin cantos disponibles</h3>\
+          <h1>Sin cantos disponibles</h1>\
           <p>No hay cantos disponibles por ahora.</p>\
           <div class="back-link"><a href="#/inicio">← Volver al inicio</a></div>\
         </div>\
@@ -649,7 +649,7 @@ function filterSongList(query) {
     var message = q
       ? 'No se encontraron cantos para “' + escapeHTML(query) + '”.'
       : 'No hay cantos en esta categoría.';
-    empty.innerHTML = '<h3>Sin resultados</h3>' +
+    empty.innerHTML = '<h2>Sin resultados</h2>' +
       '<p>' + message + '</p>' +
       '<button id="song-clear-search" class="btn btn-primary" type="button">Limpiar búsqueda</button>';
     empty.classList.remove('hidden');
@@ -679,7 +679,7 @@ function showSongDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
-          <h3>No se pudieron cargar los cantos</h3>\
+          <h1>No se pudieron cargar los cantos</h1>\
           <p>No se pudieron cargar los cantos. Verifica los archivos de datos.</p>\
           <div class="back-link"><a href="#/cantos">← Volver a cantos</a></div>\
         </div>\
@@ -693,7 +693,7 @@ function showSongDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
-          <h3>Canto no encontrado</h3>\
+          <h1>Canto no encontrado</h1>\
           <p>Este canto no está disponible.</p>\
           <div class="back-link"><a href="#/cantos">← Volver a cantos</a></div>\
         </div>\
@@ -755,7 +755,7 @@ function showRepertoireDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
-          <h3>No se pudieron cargar los repertorios</h3>\
+          <h1>No se pudieron cargar los repertorios</h1>\
           <p>No se pudieron cargar los repertorios. Verifica los archivos de datos.</p>\
           <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
         </div>\
@@ -769,7 +769,7 @@ function showRepertoireDetail(id) {
     dynamic.innerHTML = '\
       <section class="section">\
         <div class="empty-state">\
-          <h3>Repertorio no encontrado</h3>\
+          <h1>Repertorio no encontrado</h1>\
           <p>Este repertorio no está disponible.</p>\
           <div class="back-link"><a href="#/eventos">← Volver a eventos</a></div>\
         </div>\

@@ -1362,6 +1362,8 @@ button.cal-day.is-selected:hover {
   border-radius: var(--radius-lg);
   border: 1px dashed var(--line);
 }
+.empty-state h1,
+.empty-state h2,
 .empty-state h3 {
   font-family: var(--font-display);
   font-weight: 600;
