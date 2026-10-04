@@ -41,7 +41,18 @@ async function loadJSON(url) {
 }
 
 function typeLabel(type) {
-  const labels = { ensayo: 'Ensayo', misa: 'Misa', taller: 'Taller' };
+  const labels = {
+    ensayo: 'Ensayo',
+    misa: 'Misa',
+    taller: 'Taller',
+    encuentro: 'Encuentro',
+    novena: 'Novena',
+    horaSanta: 'Hora Santa',
+    atol: 'Atol',
+    boda: 'Boda',
+    tarde: 'Tarde',
+    vigilia: 'Vigilia'
+  };
   return labels[type] || type;
 }
 
@@ -466,8 +477,11 @@ function renderUpcomingEvents(events) {
   container.setAttribute('aria-busy', 'false');
 
   var published = publishedEventsSorted(events);
+  // "Próximos encuentros" solo muestra eventos de hoy en adelante.
+  var today = todayKey();
+  var upcoming = published.filter(function (e) { return e.date >= today; });
 
-  if (published.length === 0) {
+  if (upcoming.length === 0) {
     container.innerHTML = '';
     if (empty) {
       empty.innerHTML = '<h3>Sin eventos próximos</h3>' +
@@ -480,10 +494,10 @@ function renderUpcomingEvents(events) {
 
   if (empty) empty.classList.add('hidden');
 
-  // Dos cards completas; con 3+ publicados, el tercero se muestra como teaser.
-  var html = published.slice(0, 2).map(function (e) { return eventCardHTML(e); }).join('');
-  if (published.length >= 3) {
-    html += teaserCardHTML(published[2]);
+  // Dos cards completas; con 3+ próximos, el tercero se muestra como teaser.
+  var html = upcoming.slice(0, 2).map(function (e) { return eventCardHTML(e); }).join('');
+  if (upcoming.length >= 3) {
+    html += teaserCardHTML(upcoming[2]);
   }
   container.innerHTML = html;
 }
