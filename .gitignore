@@ -48,5 +48,13 @@ Proyecto Actual/
 # Prototipos de rediseño (no se versionan)
 prototypes/
 
+# Originales pesados de fotos (~15.7 MB). Solo se versionan las versiones
+# optimizadas para web: assets/img/nosotros-1..4.jpg
+assets/img/Renacer/
+
 # Utilidad local de servidor (no se versiona)
 iniciar-servidor.bat
+
+# Documentos fuente de cantos (DOCX/PDF); el contenido vive en data/songs.json
+assets/*.docx
+assets/*.pdf
