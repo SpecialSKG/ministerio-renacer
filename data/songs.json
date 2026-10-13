@@ -1,22 +1,62 @@
 [
   {
     "id": "song-001",
-    "title": "Canto de Alabanza",
-    "lyrics": "Canta mi alma al Señor,\ncon alegría y fervor.\nSu amor eterno es mi canción,\nmi vida entera en adoración.",
+    "title": "Gloria (Onni/Anni)",
+    "lyrics": "Gloria\nOnni\n\nGlooria, glooria, glooria, gloooria\nGlooria, glooria, glooria, gloooria\n\nSeñor Dios, Rey celestial, Dios Padre todopoderoso,\nte damos gracias, te adoramos, te alabamos por tu gloria.\nCoro\nSeñor Jesucristo, Hijo único Señor Dios, Cordero de Dios,\ntú que quitas el pecado del mundo, ten piedad, escúchanos\ndesde la diestra del Padre.\nCoro\nSolo tú eres santo Señor, solo tú Altísimo, con el Santo Espíritu.\nJesucristo en la gloria de Dios Padre.",
     "category": "alabanza",
-    "key": "C",
-    "chords": "C - G - Am - F",
-    "tags": ["alabanza", "apertura", "alegre"],
-    "notes": "Tempo rápido, adecuado para entrada."
+    "key": "",
+    "chords": "",
+    "tags": ["alabanza", "gloria", "liturgico"],
+    "notes": "Procedencia: Hoja de canto (DOCX). Metadato del archivo: 'transcripción de manuscrito'. key vacío: el documento no trae acordes ni cifrado, no se deduce tonalidad. Título ambiguo (Onni/Anni); revisar fidelidad. Categoría 'alabanza' asignada con criterio (Gloria del Ordinario de la Misa); por confirmar. Typos preservados ('Glooria', 'gloooria')."
   },
   {
     "id": "song-002",
-    "title": "Canto de Comunión",
-    "lyrics": "Señor, recíbeme en tu mesa,\nparte el pan, dame tu fortaleza.\nEn tu cuerpo y sangre encuentro paz,\njamás me apartaré de ti, jamás.",
-    "category": "comunion",
+    "title": "María Inmaculada (DEI VERBUM)",
+    "lyrics": "ESTROFA\nMaría inmaculada, elegida desde tu concepción,\nPara ser la madre de Cristo nuestro redentor,\nEstrella de evangelización, que iluminas mi camino\nY con tu amor me conduces hacia Cristo mi Salvador\nCORO 1\nMaría inmaculada, manantial de agua viva,\nTú eres la esperanza de este pueblo que te canta\nSOLO\nESTROFA\nCORO 2\nMaría inmaculada, elegida desde tu concepción\nPara ser la madre de Cristo nuestro redentor\nCORO 1",
+    "category": "alabanza",
+    "key": "C",
+    "chords": "C - Am - Dm - G - F - F#",
+    "tags": ["maria", "inmaculada", "mariano", "evangelizacion"],
+    "notes": "Procedencia: Hoja de canto (DOCX). key 'C' deducida del primer acorde (C); por confirmar. Categoría 'alabanza' asignada con criterio (canto mariano; la taxonomía no incluye 'mariano'); alternativa 'otro'; por confirmar. Letra sin cifrado; acordes en el campo chords con notación anglosajona original."
+  },
+  {
+    "id": "song-003",
+    "title": "Que Dios Tan Bueno",
+    "lyrics": "INTRO\n\nVERSO\nLo Traicioné yo lo ofendí\nCon mis culpas su costado atravesé\nYo lo negué más de 3 veces\nY su santo rostro yo abofeteé\n\nESTRIBILLO\nY cuando todos van a apedrearme\nNo me condena solo me pide no peques más\nY cuando me pierdo Se lanza a buscarme\nY hay fiesta en el cielo cuando vuelvo junto al padre\n\nCORO\nQue Dios tan bueno Que Dios tan bueno\nQue Dios tan bueno Que Dios tan bueno tengo yo\n\nVERSO 2\nYo me arrepiento me duele la vida\nMe confieso de rodillas ante el\nPorque solo el puede\nPor su misericordia\nPerdonarme y llevarme a la gloria\n\nREPETIR: ESTRIBILLO Y CORO",
+    "category": "otro",
+    "key": "Em",
+    "chords": "Em - C - G - D",
+    "tags": ["penitencial", "misericordia", "perdon", "conversion"],
+    "notes": "Procedencia: Hoja de canto (DOCX). Autor según el documento: Quique López. key 'Em' deducida del primer acorde (Em); por confirmar. Categoría 'otro' (tema penitencial/misericordia, sin categoría específica en la taxonomía; alternativa 'alabanza'); por confirmar. Typos preservados ('Lo Traicioné', 'el puede')."
+  },
+  {
+    "id": "song-004",
+    "title": "Sacerdote para siempre",
+    "lyrics": "INTRO\nESTROFA 1\nPorque eres la razón de mi vida\nMi fuerza consuelo y alegría\nPorque eres el amor que yo soñé\nY sin Ti estoy perdido y nada soy\nESTRIBILLO\nAquí estoy Señor toma mi vida\nSacerdote para siempre quiero ser\nAquí estoy Señor toma mi vida\nSacerdote para siempre quiero ser\nESTROFA 2\nAl postrarme en tu presencia estoy temblando\nConsciente de mi nada y pequeñez\nY al levantarme con tu Espíritu Divino\nTu siervo consagrado yo seré\nMi vida como santo relicario\nTu presencia a los hombres llevará\nY en mis manos, tus manos los bendecirá\nY en mí, tu corazón los amará\nREPETIR ESTRIBILLO\nESTROFA 3\nDe tu amor estoy sediento oh Señor\nEn ti todo lo encuentro y soy feliz\nY en mi pecho tu palabra incontenible\nCon su fuego al mundo entero abrazaré\nY no importan ya las dudas y el temor\nCon tu amor todo lo puedo y venceré\nY no importa lo que venga si a mi lado\nPaso a paso contigo contaré\nREPETIR ESTRIBILLO\nFINAL\nTú eres digno de ser preferido\nAmado y servido sobre todo oh Señor\nAquí estoy Señor toma mi vida\nSacerdote para siempre quiero ser",
+    "category": "otro",
     "key": "G",
-    "chords": "G - Em - C - D",
-    "tags": ["comunion", "lento", "reflexivo"],
-    "notes": "Tempo lento, después de la consagración."
+    "chords": "Sol · Re · Do · Mi- · La",
+    "tags": ["sacerdotal", "vocacional", "consagracion"],
+    "notes": "Procedencia: Hoja de canto (DOCX). key 'G' deducida del primer acorde (Sol = G); por confirmar. Categoría 'otro' (canto vocacional/sacerdotal; no hay categoría específica); por confirmar. Acordes en solfeo latino original."
+  },
+  {
+    "id": "song-005",
+    "title": "Siervo por amor",
+    "lyrics": "ESTROFA 1\nUna noche de sudor, en una barca en pleno mar,\nmientras el día amanece ya, aún sus redes vacías están.\nPero la voz que te llama, otro mar te enseñará\na la orilla de sus corazones, sus redes lanzará.\nESTRIBILLO\nOfreces toda tu vida\nComo María al pie de la cruz:\nY serás, siervo de todo hombre,\nsiervo por amor, sacerdote de la humanidad.\nESTROFA 2\nAvanzaba en el silencio, entre lágrimas esperaba\nque la semilla antes esparcida,\ncayera sobre tierra fértil.\nDe fiesta está tu corazón,\nporque el trigo que ondea.\nYa ha madurado bajo el sol y se puede\nY se puede almacenar.",
+    "category": "otro",
+    "key": "Dm",
+    "chords": "Re- · Fa · Do · La- · Sib · Sol- · La",
+    "tags": ["sacerdotal", "vocacional", "servicio", "maria"],
+    "notes": "Procedencia: Hoja de canto (DOCX). key 'Dm' deducida del primer acorde (Re- = Dm); por confirmar. Categoría 'otro' (canto vocacional/sacerdotal y de servicio; no hay categoría específica); por confirmar. Acordes en solfeo latino original."
+  },
+  {
+    "id": "song-006",
+    "title": "Symbolum 77",
+    "lyrics": "ESTROFA 1\nEres Tú mi vida, sólo Tú Señor\nEres mi Camino y eres mi Verdad\nSeguiré tus pasos, me guiará tu amor\nTú me has dado vida nueva y tu salvación\nYa no tengo más temor, si Tú estás aquí\nTe lo ruego, quédate en mí.\nESTROFA 2\nCreo en Jesucristo, Hijo de María\nHijo Eterno y Santo, nuestro Redentor\nCreo que por salvarme, moriste en la cruz\nY al resucitar me diste vida en plenitud.\nEn el Pan y el Vino, te nos das Señor\nLlena mi alma, dame tu amor.\nESTROFA 3\nEres Tú mi fuerza, sólo Tú Señor\nEres Luz de mi alma, y mi Libertad\nNada en este mundo, nos separará\nYo sé que tu mano fuerte, no me dejará\nDe todos los males, Tú me librarás\nTe lo pido, dame tu paz.\nESTROFA 4\nEres Pan de Vida, Fuente de mi amor\nTú mi Fortaleza, ¡Eres mi Señor!\nTú que sabes bien quién soy, dame tu perdón\nEn tus manos, yo me entrego, todo entero a Ti\nQuédate en mi corazón, llena mi existir\nTe lo ruego, quédate en mí.",
+    "category": "otro",
+    "key": "Dm",
+    "chords": "Re- · Sib · La- · Do · Re7 · Sol- · Do7 · Fa · La7",
+    "tags": ["profesion-de-fe", "credo", "eucaristia", "salvacion"],
+    "notes": "Procedencia: Hoja de canto (DOCX). key 'Dm' deducida del primer acorde (Re- = Dm); por confirmar. Categoría 'otro' (profesión de fe/credo con referencias eucarísticas; alternativas 'adoracion' o 'comunion'); por confirmar. Acordes en solfeo latino original."
   }
 ]
